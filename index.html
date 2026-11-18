@@ -319,7 +319,7 @@ function renderToday(){
   const k = ui.sel, list = tasksFor(k), done = doneOn(k);
   const tt = totalTicks(), rem = tt%3, free = freeHoles();
   const C = 2*Math.PI*30, seg = C/3;
-  const ring = [0,1,2].map(i=>'<circle class="seg" cx="38" cy="38" r="30" stroke-dasharray="'+(i<rem?seg-6:0)+' '+C+'" stroke-dashoffset="'+(-i*seg)+'" transform="rotate(-90 38 38)"/>').join("");
+  const ring = [0,1,2].filter(i=>i<rem).map(i=>'<circle class="seg" cx="38" cy="38" r="30" stroke-dasharray="'+(i<rem?seg-6:0)+' '+C+'" stroke-dashoffset="'+(-i*seg)+'" transform="rotate(-90 38 38)"/>').join("");
   const monday = parse(mondayKey);
   const week = Array.from({length:7},(_,i)=>{ const d=new Date(monday); d.setDate(monday.getDate()+i); const dk=key(d);
     const all=tasksFor(dk).length, dn=doneOn(dk).filter(id=>tasksFor(dk).some(t=>t.id===id)).length;
