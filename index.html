@@ -1,0 +1,632 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#F4F7F0" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#1D1A17" media="(prefers-color-scheme: dark)">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Зимний арк">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Зимний арк</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Inter:wght@400;500;600;700;800&family=Onest:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: phone-first habit app — one narrow column, three tabs (Сегодня / Карточки / Цели) in a floating bottom bar; reward cards are printed punch cards in a swipeable stack */
+:root{
+  --bg:#F4F7F0; --surface:#FFFFFF; --surface2:#EAEFE3; --ink:#3A322C; --muted:#8B7E74; --line:#E3E6DC;
+  --accent:#9CBA7F; --accent-ink:#22301A; --danger:#D97C5B;
+  --shadow:0 1px 8px rgba(58,50,44,.04),0 2px 16px rgba(58,50,44,.06);
+  --head:"Inter","Onest",system-ui,sans-serif;
+  --body:"Inter","Onest",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --print:"Dela Gothic One","Arial Black",Impact,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#1D1A17; --surface:#2A2622; --surface2:#35302A; --ink:#F3EEE8; --muted:#AA9D92; --line:#3A342E;
+  --accent:#A9C78C; --accent-ink:#1F2A16; --danger:#E8906F;
+  --shadow:0 1px 8px rgba(0,0,0,.25),0 4px 20px rgba(0,0,0,.35); color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#1D1A17; --surface:#2A2622; --surface2:#35302A; --ink:#F3EEE8; --muted:#AA9D92; --line:#3A342E;
+  --accent:#A9C78C; --accent-ink:#1F2A16; --danger:#E8906F;
+  --shadow:0 1px 8px rgba(0,0,0,.25),0 4px 20px rgba(0,0,0,.35); color-scheme:dark}
+
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{overflow-x:clip}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.4;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
+  padding-block:20px calc(110px + env(safe-area-inset-bottom,0px))}
+.app{max-width:480px;margin:0 auto}
+.view{display:flex;flex-direction:column;gap:18px}
+h1,h2,h3{font-family:var(--head);font-weight:700;margin:0;text-wrap:balance}
+h1{font-size:30px;font-weight:800;letter-spacing:-.02em}
+h2{font-size:17px}
+h3{font-size:15px}
+.eyebrow{font-size:13px;font-weight:600;color:var(--muted)}
+.muted{color:var(--muted)}
+.small{font-size:13px}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.top{display:flex;justify-content:space-between;align-items:flex-end;gap:12px}
+.panel{background:var(--surface);border-radius:32px;padding:18px;box-shadow:var(--shadow)}
+.pill{display:inline-flex;align-items:center;gap:6px;padding:7px 12px;border-radius:99px;background:var(--surface);box-shadow:var(--shadow);font-weight:600;font-size:13px;white-space:nowrap}
+.pill svg{width:16px;height:16px}
+.btn{border:0;border-radius:16px;padding:12px 16px;background:var(--accent);color:var(--accent-ink);font-weight:700}
+.btn:disabled{opacity:.4;cursor:default}
+.btn.soft{background:var(--surface2);color:var(--ink)}
+.btn.sm{padding:8px 12px;border-radius:12px;font-size:13px}
+.x{border:0;background:transparent;color:var(--muted);width:32px;height:32px;border-radius:10px;font-size:18px;line-height:1;flex:none}
+.x:hover{background:var(--surface2);color:var(--ink)}
+
+/* progress */
+.prog{display:grid;grid-template-columns:76px minmax(0,1fr);gap:16px;align-items:center}
+.ring{width:76px;height:76px}
+.ring circle{fill:none;stroke-width:9;stroke-linecap:round}
+.ring .bg{stroke:var(--surface2)}
+.ring .seg{stroke:#fd834e;transition:stroke-dasharray .35s}
+.prog b{font-family:var(--head);font-size:18px;display:block;margin-bottom:2px}
+
+/* week */
+.week{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+.wd{border:0;background:var(--surface);border-radius:16px;padding:8px 0 9px;display:flex;flex-direction:column;align-items:center;gap:3px;box-shadow:var(--shadow)}
+.wd .n{font-family:var(--head);font-size:15px;font-weight:700;font-variant-numeric:tabular-nums}
+.wd .l{font-size:11px;font-weight:600;color:var(--muted)}
+.wd .bar{width:22px;height:4px;border-radius:2px;background:var(--surface2);overflow:hidden}
+.wd .bar i{display:block;height:100%;background:var(--accent)}
+.wd[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink)}
+.wd[aria-pressed="true"] .l{color:inherit;opacity:.7}
+.wd[aria-pressed="true"] .bar{background:color-mix(in srgb,var(--bg) 25%,transparent)}
+.wd[aria-pressed="true"] .bar i{background:var(--bg)}
+.wd:disabled{opacity:.35;cursor:default}
+
+/* tasks */
+.list{display:flex;flex-direction:column;gap:10px}
+.task{display:grid;grid-template-columns:auto minmax(0,1fr);gap:14px;align-items:center;width:100%;text-align:left;border:0;background:var(--surface);border-radius:24px;padding:14px 16px;box-shadow:var(--shadow);transition:transform .12s}
+.task:active{transform:scale(.985)}
+.check{width:34px;height:34px;border-radius:50%;border:2.5px solid var(--g);display:grid;place-items:center;transition:background .18s}
+.check svg{width:18px;height:18px;color:#fff;transform:scale(0);transition:transform .22s cubic-bezier(.3,1.7,.5,1)}
+.task.done .check{background:var(--g)}
+.task.done .check svg{transform:scale(1)}
+.task.done .tt{text-decoration:line-through;text-decoration-color:color-mix(in srgb,var(--ink) 40%,transparent);color:var(--muted)}
+.tt{font-weight:600;display:block}
+.meta{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:3px;font-size:12px;color:var(--muted)}
+.tag{display:inline-flex;align-items:center;gap:5px;font-weight:600}
+.tag::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--g)}
+.empty{padding:22px;text-align:center;border:2px dashed var(--line);border-radius:20px;color:var(--muted)}
+
+/* forms */
+.form{display:flex;flex-direction:column;gap:12px}
+.row{display:flex;gap:10px;flex-wrap:wrap}
+.row>*{flex:1 1 140px;min-width:0}
+.field{display:flex;flex-direction:column;gap:5px}
+.field label,.lbl{font-size:12px;font-weight:600;color:var(--muted)}
+.inp{width:100%;border:0;background:var(--surface2);border-radius:14px;padding:11px 12px;min-width:0}
+.seg{display:grid;grid-template-columns:1fr 1fr;background:var(--surface2);border-radius:14px;padding:4px;gap:4px}
+.seg button{border:0;background:transparent;border-radius:10px;padding:8px;font-weight:600;font-size:14px}
+.seg button[aria-pressed="true"]{background:var(--surface);box-shadow:var(--shadow)}
+.days{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}
+.days button{border:0;background:var(--surface2);border-radius:12px;padding:9px 0;font-weight:700;font-size:13px}
+.days button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink)}
+.err{color:var(--danger);font-size:13px;font-weight:600;min-height:0}
+.err:empty{display:none}
+.dots{display:flex;gap:8px;flex-wrap:wrap}
+.dot{width:30px;height:30px;border-radius:50%;border:3px solid transparent;padding:0;background:var(--c)}
+.dot[aria-pressed="true"]{border-color:var(--surface);box-shadow:0 0 0 2px var(--ink)}
+details.panel>summary{list-style:none;cursor:pointer;display:flex;justify-content:space-between;align-items:center;font-family:var(--head);font-weight:700;font-size:15px}
+details.panel>summary::-webkit-details-marker{display:none}
+details.panel>summary::after{content:"+";font-size:22px;font-family:var(--body);color:var(--muted)}
+details.panel[open]>summary::after{content:"–"}
+details.panel[open]>summary{margin-bottom:14px}
+
+/* goals */
+.goal{display:flex;flex-direction:column;gap:8px}
+.goal-h{display:flex;align-items:center;gap:10px}
+.goal-h .sq{width:14px;height:14px;border-radius:5px;background:var(--g);flex:none}
+.goal-h h2{flex:1;min-width:0}
+.trow{display:flex;align-items:center;gap:10px;background:var(--surface);border-radius:16px;padding:10px 8px 10px 14px;box-shadow:var(--shadow)}
+.trow>div{flex:1;min-width:0}
+.inline-confirm{display:flex;gap:6px;align-items:center;flex-wrap:wrap;font-size:13px;font-weight:600}
+
+/* deck of punch cards */
+.deck{position:relative;height:244px;margin-top:4px}
+.dcard{position:absolute;left:0;right:0;top:0;height:206px;transform-origin:50% 90%;transition:transform .34s cubic-bezier(.2,.8,.25,1),opacity .3s;touch-action:pan-y;user-select:none;-webkit-user-select:none}
+.dcard:not([data-pos="0"]){pointer-events:none}
+.pcard{position:relative;height:100%;display:grid;grid-template-columns:minmax(0,1fr) auto;border-radius:10px;overflow:hidden;box-shadow:0 2px 4px rgba(0,0,0,.08),0 18px 30px -18px rgba(0,0,0,.45)}
+.pcard .face{background:var(--c-l);color:var(--c-t);padding:18px 16px 16px 18px;display:flex;flex-direction:column;gap:6px;min-width:0}
+.pcard .ttl{font-family:var(--print);font-size:clamp(19px,5.4vw,24px);line-height:1;text-transform:uppercase;overflow-wrap:break-word;hyphens:auto;-webkit-hyphens:auto}
+.pcard .sub{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;opacity:.75}
+.pcard .rw{margin-top:auto;display:flex;flex-direction:column;gap:2px}
+.pcard .rw label{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase}
+.pcard .rw input{background:transparent;border:0;border-bottom:1.5px solid currentColor;color:inherit;font:600 14px/1.4 var(--body);padding:2px 0 3px;width:100%;border-radius:0}
+.pcard .rw input::placeholder{color:inherit;opacity:.5}
+.pcard .rw .ln{height:1.5px;background:currentColor;margin-top:13px}
+.pcard .holes{background:var(--c-r);display:grid;grid-template-columns:repeat(2,38px);grid-auto-rows:38px;gap:4px 10px;padding:14px;align-content:center;border-left:2px dashed color-mix(in srgb,var(--c-i) 40%,transparent)}
+.hole{border:0;background:transparent;padding:0;display:grid;place-items:center;border-radius:50%}
+.hole .o{width:28px;height:28px;border-radius:50%;border:2px dashed var(--c-i);opacity:.55;transition:transform .15s}
+.hole:hover .o{transform:scale(1.12);opacity:.9}
+.hole svg{width:32px;height:32px;color:var(--c-i)}
+.hole.pop svg{animation:pop .5s cubic-bezier(.3,1.7,.5,1)}
+@keyframes pop{0%{transform:scale(0) rotate(-50deg)}100%{transform:scale(1) rotate(0)}}
+.pcard .stamp{position:absolute;left:38%;top:50%;transform:translate(-50%,-50%) rotate(-12deg);font-family:var(--print);font-size:24px;color:var(--c-t);border:3px solid var(--c-t);padding:3px 12px;border-radius:6px;background:color-mix(in srgb,var(--c-l) 75%,transparent);text-transform:uppercase;pointer-events:none}
+.deckbar{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.nav{width:44px;height:44px;border-radius:50%;border:0;background:var(--surface);box-shadow:var(--shadow);font-size:20px;display:grid;place-items:center}
+.cnt{font-family:var(--head);font-weight:700;font-variant-numeric:tabular-nums}
+.toast{font-size:13px;font-weight:600;text-align:center;min-height:18px;color:var(--muted)}
+.coll{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.mini{border-radius:14px;padding:12px;background:var(--c-l);color:var(--c-t);display:flex;flex-direction:column;gap:6px;min-height:96px}
+.mini b{font-family:var(--print);font-weight:400;font-size:15px;line-height:1;text-transform:uppercase;overflow-wrap:anywhere}
+.mini span{font-size:12px;font-weight:600}
+.mini button{margin-top:auto;align-self:flex-start;border:1.5px solid currentColor;background:transparent;color:inherit;border-radius:99px;padding:3px 10px;font-size:12px;font-weight:600}
+.sw{width:44px;height:30px;border-radius:8px;border:3px solid transparent;padding:0;overflow:hidden;display:grid;grid-template-columns:1fr 1fr}
+.sw[aria-pressed="true"],.ic[aria-pressed="true"]{border-color:var(--ink)}
+.ic{width:40px;height:40px;border-radius:12px;border:3px solid transparent;background:var(--surface2);display:grid;place-items:center;padding:0}
+.ic svg{width:22px;height:22px}
+
+/* tab bar */
+.tabs{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(14px + env(safe-area-inset-bottom,0px));z-index:20;display:flex;gap:4px;padding:6px;background:color-mix(in srgb,var(--surface) 88%,transparent);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-radius:24px;box-shadow:0 10px 30px -10px rgba(0,0,0,.35);width:min(360px,calc(100% - 32px))}
+.tabs button{flex:1;border:0;background:transparent;border-radius:18px;padding:8px 4px 7px;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:11px;font-weight:600;color:var(--muted)}
+.tabs svg{width:22px;height:22px}
+.tabs button[aria-selected="true"]{background:var(--accent);color:var(--accent-ink)}
+.sync{font-size:12px;color:var(--muted);text-align:center}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <symbol id="i-flower" viewBox="0 0 24 24"><g stroke="currentColor" stroke-width="4.4" stroke-linecap="round"><path d="M12 3v18M3 12h18M5.6 5.6l12.8 12.8M18.4 5.6L5.6 18.4"/></g></symbol>
+  <symbol id="i-heart" viewBox="0 0 24 24"><path fill="currentColor" d="M12 21s-7.6-4.6-9.6-9.3C1 8 3.4 4.4 7 4.4c2 0 3.5 1.1 5 3 1.5-1.9 3-3 5-3 3.6 0 6 3.6 4.6 7.3C19.6 16.4 12 21 12 21z"/></symbol>
+  <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5.2" fill="currentColor"/><g stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 1.8v3M12 19.2v3M1.8 12h3M19.2 12h3M4.8 4.8l2.1 2.1M17.1 17.1l2.1 2.1M4.8 19.2l2.1-2.1M17.1 6.9l2.1-2.1"/></g></symbol>
+  <symbol id="i-clover" viewBox="0 0 24 24"><g fill="currentColor"><circle cx="8.3" cy="8.3" r="4.6"/><circle cx="15.7" cy="8.3" r="4.6"/><circle cx="8.3" cy="15.4" r="4.6"/><circle cx="15.7" cy="15.4" r="4.6"/></g><path d="M14 17l4 5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></symbol>
+  <symbol id="i-star" viewBox="0 0 24 24"><path fill="currentColor" d="M12 1.8l3 6.8 7.3.6-5.6 4.8 1.7 7.2L12 17.4l-6.4 3.8 1.7-7.2-5.6-4.8 7.3-.6z"/></symbol>
+  <symbol id="i-brush" viewBox="0 0 24 24"><path fill="currentColor" d="M20.6 2.2c.7.6.6 1.6-.1 2.4l-8 8.6-2.9-2.6 7.9-8.5c.8-.8 2.3-.6 3.1.1zM8.4 12.2l2.9 2.6c-.3 3.6-2.7 6.4-7.9 6.6.9-1.2 1-2.5 1.2-3.8.3-2.4 1.6-4.9 3.8-5.4z"/></symbol>
+  <symbol id="i-cup" viewBox="0 0 24 24"><path fill="currentColor" d="M3 8h14v5.5A6.5 6.5 0 0 1 10.5 20h-1A6.5 6.5 0 0 1 3 13.5zm14 1.5h1.5a3 3 0 0 1 0 6H16.6l.4-2h1.5a1 1 0 0 0 0-2H17z"/><path d="M7 2.5c-.8 1 .8 1.6 0 3M11 2.5c-.8 1 .8 1.6 0 3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" fill="none"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M4.5 12.5l5 5 10-11" fill="none" stroke="currentColor" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-punch" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2.2" stroke-dasharray="3 2.4"/><circle cx="12" cy="12" r="4" fill="currentColor"/></symbol>
+  <symbol id="t-today" viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15.5" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8 3v4M16 3v4M8 13l3 3 5-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="t-cards" viewBox="0 0 24 24"><rect x="5" y="7" width="15" height="12" rx="3" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8 4h9a3 3 0 0 1 3 3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="16" cy="13" r="1.6" fill="currentColor"/></symbol>
+  <symbol id="t-goals" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="4.5" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="1.4" fill="currentColor"/></symbol>
+</defs></svg>
+
+<div class="app" lang="ru">
+  <section class="view" id="v-today" aria-label="Сегодня"></section>
+  <section class="view" id="v-cards" aria-label="Карточки" hidden></section>
+  <section class="view" id="v-goals" aria-label="Цели" hidden></section>
+  <p class="sync" id="sync" style="margin-top:22px">Загружаю сохранённое…</p>
+  <div class="row" style="justify-content:center;margin-top:8px">
+    <button type="button" class="btn sm soft" id="exportBtn" style="flex:0 0 auto">Скачать копию</button>
+    <label class="btn sm soft" style="flex:0 0 auto;cursor:pointer">Загрузить копию<input type="file" id="importInp" accept="application/json,.json" hidden></label>
+  </div>
+  <p class="sync" id="backupMsg"></p>
+</div>
+
+<nav class="tabs" role="tablist" aria-label="Разделы">
+  <button type="button" role="tab" data-tab="today" aria-selected="true"><svg><use href="#t-today"/></svg>Сегодня</button>
+  <button type="button" role="tab" data-tab="cards" aria-selected="false"><svg><use href="#t-cards"/></svg>Карточки</button>
+  <button type="button" role="tab" data-tab="goals" aria-selected="false"><svg><use href="#t-goals"/></svg>Цели</button>
+</nav>
+
+<script>
+(function(){
+"use strict";
+const MAX = 5;
+const PAL = {
+  navy:{l:"#1F2A6B",t:"#F1E36B",r:"#BFE3F0",i:"#1F2A6B"}, pink:{l:"#F6D3D1",t:"#28307A",r:"#F6D3D1",i:"#C2362B"},
+  sage:{l:"#EEEBDD",t:"#173B2A",r:"#EEEBDD",i:"#2E6B45"}, ember:{l:"#F3E9E0",t:"#C2361F",r:"#D2451E",i:"#F2C230"},
+  sky:{l:"#D3ECF2",t:"#E07A1F",r:"#F08A24",i:"#B5E27A"}, peri:{l:"#8EA0F0",t:"#2B1A10",r:"#4A1E12",i:"#8EA0F0"},
+  cocoa:{l:"#4A1714",t:"#F2B8D8",r:"#F2B8D8",i:"#E0303A"}, lemon:{l:"#F4E36A",t:"#1F2A6B",r:"#1F2A6B",i:"#F4E36A"}
+};
+const ICONS = ["flower","heart","sun","clover","star","brush","cup"];
+const GCOL = ["#9CBA7F","#fd834e","#E8B4BC","#E8B86D","#D4956E","#8FB3C4"];
+const OLD_GCOL = ["#5B5BD6","#E0633A","#2F9E6B","#D9A21B","#C74A8B","#3A8FD1"];
+const WD = ["Пн","Вт","Ср","Чт","Пт","Сб","Вс"];
+const WDL = ["понедельник","вторник","среда","четверг","пятница","суббота","воскресенье"];
+const MON = ["января","февраля","марта","апреля","мая","июня","июля","августа","сентября","октября","ноября","декабря"];
+
+const pad = n => String(n).padStart(2,"0");
+const key = d => d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate());
+const parse = k => new Date(k+"T00:00:00");
+const dow = k => (parse(k).getDay()+6)%7;
+const TODAY = new Date(); TODAY.setHours(0,0,0,0);
+const todayKey = key(TODAY);
+const mondayKey = (()=>{ const d=new Date(TODAY); d.setDate(d.getDate()-dow(todayKey)); return key(d); })();
+const uid = () => Math.random().toString(36).slice(2,10);
+const esc = s => String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const svg = n => '<svg aria-hidden="true"><use href="#i-'+n+'"/></svg>';
+const clone = o => JSON.parse(JSON.stringify(o));
+function plural(n,a,b,c){ const m=n%10,h=n%100; if(m===1&&h!==11) return a; if(m>=2&&m<=4&&(h<12||h>14)) return b; return c; }
+function fmtDate(k){ const d=parse(k); return d.getDate()+" "+MON[d.getMonth()]; }
+
+function defaults(){
+  const g1=uid(), g2=uid(), g3=uid();
+  const rep = (title,goal,days,min) => ({id:uid(),title,goal,type:"repeat",days,from:mondayKey,min});
+  return { v:2, rev:0, legacy:0, done:{},
+    goals:[{id:g1,name:"Методичка и блог",color:GCOL[0]},{id:g2,name:"Комикс",color:GCOL[1]},{id:g3,name:"Здоровье",color:GCOL[2]}],
+    tasks:[
+      rep("Пост в Threads",g1,[0,1,2,3,4,5,6],"хотя бы одно предложение"),
+      rep("15 минут методички",g1,[0,1,2,3,4,5],"открыть файл"),
+      rep("15 минут рисования",g2,[0,2,4,5],"набросок на 5 минут"),
+      rep("1 сцена сюжета",g2,[1,3],"3 предложения"),
+      rep("Силовая 20 минут",g3,[0,3],"надеть кроссовки и 5 приседаний"),
+      rep("Сон до 23:00",g3,[1,2,4,5,6],"лечь на 15 минут раньше")
+    ],
+    cards:[
+      {id:uid(),title:"Первая неделя",reward:"Кофе и десерт в Voronka",holes:2,pal:"navy",icon:"flower",filled:0,done:null},
+      {id:uid(),title:"Творческая девчонка",reward:"Музей искусств Алматы + кофе в JER",holes:4,pal:"pink",icon:"brush",filled:0,done:null},
+      {id:uid(),title:"Пишу каждый день",reward:"Красивый блокнот и маркеры",holes:4,pal:"sage",icon:"star",filled:0,done:null},
+      {id:uid(),title:"Выйти из ступора",reward:"Канатка на Шымбулак",holes:6,pal:"ember",icon:"sun",filled:0,done:null},
+      {id:uid(),title:"Живу интересно",reward:"Дизайнерская мелочь домой до 1000 ₽",holes:6,pal:"cocoa",icon:"heart",filled:0,done:null},
+      {id:uid(),title:"Зимний арк пройден",reward:"День без дел + любимый фильм",holes:8,pal:"sky",icon:"clover",filled:0,done:null}
+    ]};
+}
+function normalize(raw){
+  const d = raw && typeof raw==="object" ? clone(raw) : null;
+  if(!d) return defaults();
+  if(d.v===2){
+    const s = defaults();
+    return { v:2, rev:+d.rev||0, legacy:+d.legacy||0, done: d.done&&typeof d.done==="object"?d.done:{},
+      goals: Array.isArray(d.goals)?d.goals.map(g=>{ const i=OLD_GCOL.indexOf(g.color); return i>=0?{...g,color:GCOL[i]}:g; }):s.goals, tasks: Array.isArray(d.tasks)?d.tasks:s.tasks,
+      cards: Array.isArray(d.cards)?d.cards.map(c=>({...c, filled:Math.min(+c.filled||0, c.holes)})):s.cards };
+  }
+  // старая версия: переносим карточки и количество галочек
+  const s = defaults(); let n=0;
+  if(d.ticks) for(const k in d.ticks){ const t=d.ticks[k]; if(Array.isArray(t)) n+=t.filter(Boolean).length; }
+  s.legacy = n;
+  if(Array.isArray(d.cards)) s.cards = d.cards.map(c=>({...c, filled:0, done:c.done||null}));
+  return s;
+}
+
+let state = defaults();
+try{ const raw=localStorage.getItem("winter-arc-v2")||localStorage.getItem("winter-arc"); if(raw) state=normalize(JSON.parse(raw)); }catch(e){}
+
+const ui = { tab:"today", sel:todayKey, order:[], confirm:null, addType:"repeat", addDays:[0,2,4], addGoal:null,
+  newGoalColor:GCOL[3], cardPal:"peri", cardIcon:"star", toast:"", err:"", qerr:"", pop:null, flyIn:null };
+
+/* ---------- derived ---------- */
+function tasksFor(k){
+  const w = dow(k);
+  return state.tasks.filter(t => t.type==="once" ? t.date===k : (Array.isArray(t.days) && t.days.includes(w) && k >= (t.from||"0")));
+}
+function goalOf(id){ return state.goals.find(g=>g.id===id) || {name:"Без цели",color:"#8A8899"}; }
+function doneOn(k){ return Array.isArray(state.done[k]) ? state.done[k] : []; }
+function totalTicks(){ let n=state.legacy||0; for(const k in state.done) if(Array.isArray(state.done[k])) n+=state.done[k].length; return n; }
+function placed(){ return state.cards.reduce((a,c)=>a+(c.done?c.holes:(+c.filled||0)),0); }
+function freeHoles(){ return Math.max(0, Math.floor(totalTicks()/3) - placed()); }
+function schedText(t){
+  if(t.type==="once") return fmtDate(t.date)+(t.date===todayKey?" · сегодня":"");
+  const d=[...t.days].sort();
+  if(d.length===7) return "каждый день";
+  if(d.join()==="0,1,2,3,4") return "по будням";
+  if(d.join()==="5,6") return "по выходным";
+  return d.map(i=>WD[i]).join(", ");
+}
+function conflictFor(type, opts){
+  if(type==="once"){ return tasksFor(opts.date).length >= MAX ? opts.date : null; }
+  const d = new Date(TODAY);
+  for(let i=0;i<120;i++){ const k=key(d); if(opts.days.includes(dow(k)) && tasksFor(k).length >= MAX) return k; d.setDate(d.getDate()+1); }
+  return null;
+}
+
+/* ---------- views ---------- */
+function renderToday(){
+  const k = ui.sel, list = tasksFor(k), done = doneOn(k);
+  const tt = totalTicks(), rem = tt%3, free = freeHoles();
+  const C = 2*Math.PI*30, seg = C/3;
+  const ring = [0,1,2].map(i=>'<circle class="seg" cx="38" cy="38" r="30" stroke-dasharray="'+(i<rem?seg-6:0)+' '+C+'" stroke-dashoffset="'+(-i*seg)+'" transform="rotate(-90 38 38)"/>').join("");
+  const monday = parse(mondayKey);
+  const week = Array.from({length:7},(_,i)=>{ const d=new Date(monday); d.setDate(monday.getDate()+i); const dk=key(d);
+    const all=tasksFor(dk).length, dn=doneOn(dk).filter(id=>tasksFor(dk).some(t=>t.id===id)).length;
+    return '<button type="button" class="wd" data-day="'+dk+'" aria-pressed="'+(dk===k)+'"'+(d>TODAY?' disabled':'')+' aria-label="'+WDL[i]+', '+dn+' из '+all+'">'+
+      '<span class="l">'+WD[i]+'</span><span class="n">'+d.getDate()+'</span><span class="bar"><i style="width:'+(all?Math.round(dn/all*100):0)+'%"></i></span></button>'; }).join("");
+  const rows = list.length ? list.map(t=>{ const g=goalOf(t.goal), on=done.includes(t.id);
+      return '<button type="button" class="task'+(on?' done':'')+'" data-tick="'+t.id+'" aria-pressed="'+on+'" style="--g:'+g.color+'">'+
+        '<span class="check">'+svg("check")+'</span><span><span class="tt">'+esc(t.title)+'</span>'+
+        '<span class="meta"><span class="tag">'+esc(g.name)+'</span>'+(t.min?'<span>минимум: '+esc(t.min)+'</span>':'')+'</span></span></button>'; }).join("")
+    : '<div class="empty">На этот день задач нет. Добавь разовую ниже или повторяющуюся во вкладке «Цели».</div>';
+  const isToday = k===todayKey, d=parse(k);
+  const goalOpts = state.goals.map(g=>'<option value="'+g.id+'">'+esc(g.name)+'</option>').join("");
+  document.getElementById("v-today").innerHTML =
+    '<div class="top"><div><div class="eyebrow">'+WDL[dow(k)]+', '+fmtDate(k)+'</div><h1>'+(isToday?'Сегодня':WD[dow(k)]+', '+d.getDate())+'</h1></div>'+
+    '<button type="button" class="pill" data-tab="cards">'+svg("punch")+free+' '+plural(free,"дырочка","дырочки","дырочек")+'</button></div>'+
+    '<div class="week" role="group" aria-label="Неделя">'+week+'</div>'+
+    '<div class="panel prog"><svg class="ring" viewBox="0 0 76 76" aria-hidden="true"><circle class="bg" cx="38" cy="38" r="30"/>'+ring+'</svg>'+
+      '<div><b>'+(free? (free+' '+plural(free,'дырочка ждёт','дырочки ждут','дырочек ждут')) : ('Ещё '+(3-rem)+' '+plural(3-rem,'галочка','галочки','галочек')))+'</b>'+
+      '<span class="muted small">'+(free?'Открой «Карточки» и выбери, куда поставить. ':'')+'До следующей дырочки '+(3-rem)+' из 3. Сделано за день: '+done.filter(id=>list.some(t=>t.id===id)).length+' из '+list.length+'.</span></div></div>'+
+    '<div class="list">'+rows+'</div>'+
+    '<details class="panel"'+(ui.qerr?' open':'')+'><summary>Разовая задача на '+(isToday?'сегодня':fmtDate(k))+'</summary><div class="form">'+
+      '<div class="field"><label for="qTitle">Что сделать</label><input class="inp" id="qTitle" maxlength="60" placeholder="Например: сходить в Целинный"></div>'+
+      '<div class="field"><label for="qGoal">Цель</label><select class="inp" id="qGoal">'+goalOpts+'</select></div>'+
+      '<p class="err">'+esc(ui.qerr)+'</p>'+
+      '<button type="button" class="btn" data-act="quick"'+(list.length>=MAX?' disabled':'')+'>'+(list.length>=MAX?'На этот день уже '+MAX+' задач':'Добавить · '+list.length+' из '+MAX)+'</button></div></details>';
+}
+
+function cardInner(c){
+  const p = PAL[c.pal]||PAL.navy, f = c.done?c.holes:(+c.filled||0);
+  let holes=""; for(let i=0;i<c.holes;i++){ const on=i<f, pop = ui.pop && ui.pop.id===c.id && ui.pop.i===i;
+    holes += '<button type="button" class="hole'+(pop?' pop':'')+'" data-hole="'+c.id+'" data-on="'+(on?1:0)+'" aria-label="'+(on?'Закрытая дырочка, убрать':'Пустая дырочка, закрыть')+'"'+(c.done?' disabled':'')+'>'+(on?svg(c.icon):'<span class="o"></span>')+'</button>'; }
+  return '<div class="pcard" style="--c-l:'+p.l+';--c-t:'+p.t+';--c-r:'+p.r+';--c-i:'+p.i+'"><div class="face">'+
+    '<div class="ttl">'+esc(c.title)+'</div><div class="sub">'+f+' из '+c.holes+' · '+(c.holes*3)+' '+plural(c.holes*3,'галочка','галочки','галочек')+'</div>'+
+    '<div class="rw"><label for="rw-'+c.id+'">Награда:</label><input id="rw-'+c.id+'" data-rw="'+c.id+'" value="'+esc(c.reward)+'" maxlength="80" placeholder="впиши ништяк"><div class="ln"></div></div></div>'+
+    '<div class="holes">'+holes+'</div>'+(c.done?'<div class="stamp">Получено</div>':'')+'</div>';
+}
+const base = p => 'translateY('+(p*16)+'px) scale('+(1-p*.055)+')';
+function syncOrder(){
+  const open = state.cards.filter(c=>!c.done).map(c=>c.id);
+  ui.order = ui.order.filter(id=>open.includes(id)).concat(open.filter(id=>!ui.order.includes(id)));
+}
+function renderCards(){
+  syncOrder();
+  const free = freeHoles(), open = ui.order.map(id=>state.cards.find(c=>c.id===id));
+  const top = open[0];
+  const deck = open.map((c,i)=>'<div class="dcard" data-pos="'+i+'" data-id="'+c.id+'" style="z-index:'+(50-i)+';transform:'+base(Math.min(i,3))+';opacity:'+(i>3?0:1)+'">'+cardInner(c)+'</div>').join("");
+  const done = state.cards.filter(c=>c.done);
+  let actions = "";
+  if(top){
+    const full = (+top.filled||0) >= top.holes;
+    actions = full
+      ? '<button type="button" class="btn" data-claim="'+top.id+'">Забрать ништяк: '+esc(top.reward||top.title)+'</button>'
+      : '<button type="button" class="btn" data-place="'+top.id+'"'+(free?'':' disabled')+'>'+(free?'Поставить дырочку сюда':'Свободных дырочек пока нет')+'</button>';
+  }
+  const cdel = top && ui.confirm===('card:'+top.id)
+    ? '<div class="inline-confirm">Удалить «'+esc(top.title)+'»? <button type="button" class="btn sm" data-delcard="'+top.id+'" style="background:var(--danger)">Удалить</button><button type="button" class="btn sm soft" data-cancel="1">Нет</button></div>'
+    : (top?'<button type="button" class="btn sm soft" data-ask="card:'+top.id+'">Удалить карточку</button>':'');
+  const tt = totalTicks();
+  document.getElementById("v-cards").innerHTML =
+    '<div class="top"><div><div class="eyebrow">3 галочки = 1 дырочка</div><h1>Карточки</h1></div>'+
+    '<span class="pill">'+svg("punch")+free+' '+plural(free,'свободная','свободные','свободных')+'</span></div>'+
+    (open.length ? '<div class="deck" id="deck">'+deck+'</div>'+
+      '<div class="deckbar"><button type="button" class="nav" data-deck="prev" aria-label="Предыдущая карточка">‹</button>'+
+      '<span class="cnt">'+open.length+' '+plural(open.length,'карточка','карточки','карточек')+' в колоде</span><button type="button" class="nav" data-deck="next" aria-label="Следующая карточка">›</button></div>'+
+      '<p class="toast" id="toast">'+(ui.toast||'Листай свайпом. Нажми на пустую дырочку, чтобы закрыть её, на закрытую — чтобы вернуть.')+'</p>'+
+      '<div class="form">'+actions+'<div class="row" style="justify-content:center">'+cdel+'</div></div>'
+    : '<div class="empty">Все карточки получены. Сделай новую ниже.</div>')+
+    '<p class="muted small" style="text-align:center">Всего галочек: '+tt+' · до следующей дырочки '+(3-tt%3)+'</p>'+
+    '<details class="panel"><summary>Новая карточка</summary><div class="form">'+
+      '<div class="field"><label for="cTitle">Цель на карточке</label><input class="inp" id="cTitle" maxlength="40" placeholder="Например: дописать главу"></div>'+
+      '<div class="field"><label for="cReward">Награда</label><input class="inp" id="cReward" maxlength="80" placeholder="Например: каток на Медеу"></div>'+
+      '<div class="field"><label for="cHoles">Сколько дырочек</label><select class="inp" id="cHoles"><option value="2">2 · малый ништяк (6 галочек)</option><option value="4">4 · средний (12 галочек)</option><option value="6" selected>6 · большой (18 галочек)</option><option value="8">8 · мега (24 галочки)</option></select></div>'+
+      '<div><div class="lbl" style="margin-bottom:6px">Цвет</div><div class="dots">'+Object.keys(PAL).map(k=>'<button type="button" class="sw" data-pal="'+k+'" aria-pressed="'+(ui.cardPal===k)+'" aria-label="Цвет"><span style="background:'+PAL[k].l+'"></span><span style="background:'+PAL[k].r+'"></span></button>').join("")+'</div></div>'+
+      '<div><div class="lbl" style="margin-bottom:6px">Значок</div><div class="dots">'+ICONS.map(k=>'<button type="button" class="ic" data-icon="'+k+'" aria-pressed="'+(ui.cardIcon===k)+'" aria-label="Значок">'+svg(k)+'</button>').join("")+'</div></div>'+
+      '<button type="button" class="btn" data-act="addcard">Добавить карточку</button></div></details>'+
+    (done.length?'<h2>Коллекция полученных</h2><div class="coll">'+done.map(c=>{const p=PAL[c.pal]||PAL.navy;
+      return '<div class="mini" style="--c-l:'+p.l+';--c-t:'+p.t+'"><b>'+esc(c.title)+'</b><span>'+esc(c.reward)+'</span><span style="opacity:.7">получено '+fmtDate(c.done)+'</span><button type="button" data-undo="'+c.id+'">Вернуть в колоду</button></div>';}).join("")+'</div>':'');
+  bindDeck();
+  if(ui.flyIn){ const el=document.querySelector('.dcard[data-id="'+ui.flyIn.id+'"]');
+    if(el){ const p=+el.dataset.pos; el.style.transition="none"; el.style.transform='translateX('+(ui.flyIn.dir*120)+'%) rotate('+(ui.flyIn.dir*14)+'deg)';
+      el.getBoundingClientRect(); el.style.transition=""; el.style.transform=base(Math.min(p,3)); }
+    ui.flyIn=null; }
+}
+
+function renderGoals(){
+  if(!ui.addGoal || !state.goals.some(g=>g.id===ui.addGoal)) ui.addGoal = state.goals[0] ? state.goals[0].id : null;
+  const goals = state.goals.map(g=>{
+    const ts = state.tasks.filter(t=>t.goal===g.id && (t.type==="repeat" || t.date>=todayKey));
+    const gdel = ui.confirm===('goal:'+g.id)
+      ? '<div class="inline-confirm">Удалить цель и её задачи? <button type="button" class="btn sm" style="background:var(--danger)" data-delgoal="'+g.id+'">Да</button><button type="button" class="btn sm soft" data-cancel="1">Нет</button></div>'
+      : '<button type="button" class="x" data-ask="goal:'+g.id+'" aria-label="Удалить цель">×</button>';
+    return '<div class="goal" style="--g:'+g.color+'"><div class="goal-h"><span class="sq"></span><h2>'+esc(g.name)+'</h2><span class="muted small">'+ts.length+'</span>'+gdel+'</div>'+
+      (ts.length? ts.map(t=>'<div class="trow"><div><span class="tt">'+esc(t.title)+'</span><span class="meta"><span>'+(t.type==="once"?'разово · ':'')+schedText(t)+'</span>'+(t.min?'<span>минимум: '+esc(t.min)+'</span>':'')+'</span></div>'+
+        (ui.confirm===('task:'+t.id)?'<div class="inline-confirm" style="flex:none"><button type="button" class="btn sm" style="background:var(--danger)" data-deltask="'+t.id+'">Удалить</button><button type="button" class="btn sm soft" data-cancel="1">Нет</button></div>':'<button type="button" class="x" data-ask="task:'+t.id+'" aria-label="Удалить задачу">×</button>')+'</div>').join("")
+       : '<div class="empty small">Задач пока нет</div>')+'</div>';
+  }).join("");
+  const today = tasksFor(todayKey).length;
+  document.getElementById("v-goals").innerHTML =
+    '<div class="top"><div><div class="eyebrow">не больше '+MAX+' задач в день</div><h1>Цели</h1></div><span class="pill">сегодня '+today+' / '+MAX+'</span></div>'+
+    '<details class="panel"'+(ui.err?' open':'')+'><summary>Новая задача</summary><div class="form">'+
+      '<div class="field"><label for="tTitle">Задача</label><input class="inp" id="tTitle" maxlength="60" placeholder="Например: карусель для Instagram"></div>'+
+      '<div class="field"><label for="tMin">Минимальная версия (необязательно)</label><input class="inp" id="tMin" maxlength="60" placeholder="Например: открыть шаблон"></div>'+
+      '<div class="field"><label for="tGoal">Цель</label><select class="inp" id="tGoal">'+state.goals.map(g=>'<option value="'+g.id+'"'+(g.id===ui.addGoal?' selected':'')+'>'+esc(g.name)+'</option>').join("")+'</select></div>'+
+      '<div class="seg" role="group" aria-label="Тип задачи"><button type="button" data-type="repeat" aria-pressed="'+(ui.addType==="repeat")+'">Повторяется</button><button type="button" data-type="once" aria-pressed="'+(ui.addType==="once")+'">Разовая</button></div>'+
+      (ui.addType==="repeat"
+        ? '<div><div class="lbl" style="margin-bottom:6px">По каким дням</div><div class="days">'+WD.map((w,i)=>'<button type="button" data-wd="'+i+'" aria-pressed="'+ui.addDays.includes(i)+'">'+w+'</button>').join("")+'</div></div>'
+        : '<div class="field"><label for="tDate">Дата</label><input class="inp" type="date" id="tDate" min="'+todayKey+'" value="'+todayKey+'"></div>')+
+      '<p class="err">'+esc(ui.err)+'</p><button type="button" class="btn" data-act="addtask"'+(state.goals.length?'':' disabled')+'>Добавить задачу</button></div></details>'+
+    goals+
+    '<details class="panel"><summary>Новая цель</summary><div class="form">'+
+      '<div class="field"><label for="gName">Название</label><input class="inp" id="gName" maxlength="40" placeholder="Например: Выставки и город"></div>'+
+      '<div class="dots">'+GCOL.map(c=>'<button type="button" class="dot" style="--c:'+c+'" data-gcol="'+c+'" aria-pressed="'+(ui.newGoalColor===c)+'" aria-label="Цвет цели"></button>').join("")+'</div>'+
+      '<button type="button" class="btn" data-act="addgoal">Добавить цель</button></div></details>';
+}
+
+function render(){
+  renderToday(); renderCards(); renderGoals();
+  ["today","cards","goals"].forEach(t=>{ document.getElementById("v-"+t).hidden = ui.tab!==t; });
+  document.querySelectorAll(".tabs button").forEach(b=>b.setAttribute("aria-selected", b.dataset.tab===ui.tab));
+  ui.pop = null;
+}
+
+/* ---------- swipe deck ---------- */
+let suppressClick = false;
+function bindDeck(){
+  const top = document.querySelector('.dcard[data-pos="0"]'); if(!top) return;
+  let sx=0, sy=0, dx=0, down=false, moved=false, pid=null;
+  top.addEventListener("pointerdown", e=>{
+    if(e.button>0 || e.target.closest("input")) return;
+    down=true; moved=false; dx=0; sx=e.clientX; sy=e.clientY; pid=e.pointerId;
+  });
+  top.addEventListener("pointermove", e=>{
+    if(!down || e.pointerId!==pid) return;
+    dx = e.clientX-sx; const dy = e.clientY-sy;
+    if(!moved){ if(Math.abs(dx)>8 && Math.abs(dx)>Math.abs(dy)){ moved=true; try{top.setPointerCapture(pid);}catch(_){} top.style.transition="none"; } else if(Math.abs(dy)>12){ down=false; } return; }
+    top.style.transform = 'translateX('+dx+'px) rotate('+(dx/16)+'deg)';
+  });
+  const end = ()=>{
+    if(!down) return; down=false;
+    if(!moved) return;
+    suppressClick = true; setTimeout(()=>suppressClick=false, 60);
+    top.style.transition = "";
+    if(Math.abs(dx)>80) flyOut(top, dx>0?1:-1); else top.style.transform = base(0);
+  };
+  top.addEventListener("pointerup", end); top.addEventListener("pointercancel", end);
+}
+function flyOut(el, dir){
+  el.style.transform = 'translateX('+(dir*125)+'%) rotate('+(dir*18)+'deg)';
+  // карточки сзади подтягиваются вперёд
+  document.querySelectorAll('.dcard').forEach(c=>{ const p=+c.dataset.pos; if(p>0){ c.style.transform=base(Math.min(p-1,3)); c.style.opacity = p-1>3?0:1; } });
+  const id = el.dataset.id;
+  setTimeout(()=>{ ui.order = ui.order.filter(x=>x!==id).concat(id); ui.flyIn={id,dir}; ui.toast=""; renderCards(); }, 230);
+}
+function deckPrev(){
+  if(ui.order.length<2) return;
+  const last = ui.order.pop(); ui.order.unshift(last); ui.flyIn={id:last,dir:-1}; ui.toast=""; renderCards();
+}
+
+/* ---------- persistence ---------- */
+let ref=null, saving=false, again=false, timer=null;
+const syncEl = document.getElementById("sync");
+function persist(){
+  state.rev = Date.now();
+  try{ localStorage.setItem("winter-arc-v2", JSON.stringify(state)); }catch(e){}
+  if(ref){ clearTimeout(timer); timer=setTimeout(flush, 400); }
+}
+async function flush(){
+  if(!ref) return;
+  if(saving){ again=true; return; }
+  saving=true; syncEl.textContent="Сохраняю…";
+  try{ await ref.set(clone(state)); syncEl.textContent="Сохранено в облаке · открывается с любого устройства"; }
+  catch(e){ syncEl.textContent = e&&e.code==="quota_exceeded" ? "Хранилище заполнено" : "Облако не ответило, копия сохранена в этом браузере"; }
+  saving=false; if(again){ again=false; flush(); }
+}
+async function initStore(){
+  if(!window.claude || !window.claude.use){ syncEl.textContent="Сохранено на этом устройстве · работает без интернета"; return; }
+  try{
+    const [db,user] = await Promise.all([window.claude.use("db"), window.claude.use("user")]);
+    const id = user ? await user.id() : null;
+    if(!db || !id){ syncEl.textContent="Сохраняется в этом браузере"; return; }
+    ref = db.doc("data/users/"+id+"/tracker");
+    const t = setTimeout(()=>{ syncEl.textContent="Облако пока не отвечает, отметки сохраняются в браузере"; }, 10000);
+    ref.onSnapshot(snap=>{
+      if(!snap.metadata.fromCache) clearTimeout(t);
+      if(snap.metadata.hasPendingWrites) return;
+      if(snap.exists){
+        const remote = normalize(snap.data());
+        if(remote.rev > state.rev){ state = remote; try{ localStorage.setItem("winter-arc-v2", JSON.stringify(state)); }catch(e){} render(); }
+        else if(remote.rev < state.rev && !saving){ flush(); }
+        if(!snap.metadata.fromCache && !saving) syncEl.textContent="Сохранено в облаке · открывается с любого устройства";
+      } else if(!snap.metadata.fromCache){ if(!state.rev) state.rev=Date.now(); flush(); }
+    }, ()=>{ clearTimeout(t); ref=null; syncEl.textContent="Облако недоступно, отметки сохраняются в браузере"; });
+  }catch(e){ syncEl.textContent="Сохраняется в этом браузере"; }
+}
+
+/* ---------- events ---------- */
+const val = id => { const el=document.getElementById(id); return el ? el.value.trim() : ""; };
+document.addEventListener("click", e=>{
+  if(suppressClick){ e.preventDefault(); e.stopPropagation(); return; }
+  const b = e.target.closest("button"); if(!b || b.disabled) return;
+  const d = b.dataset;
+  if(d.tab){ ui.tab=d.tab; ui.confirm=null; render(); window.scrollTo({top:0}); return; }
+  if(d.day){ ui.sel=d.day; ui.qerr=""; renderToday(); return; }
+  if(d.tick){
+    const arr = doneOn(ui.sel).slice(), i = arr.indexOf(d.tick);
+    if(i>=0) arr.splice(i,1); else arr.push(d.tick);
+    const before = Math.floor(totalTicks()/3);
+    state.done = {...state.done, [ui.sel]: arr};
+    persist(); render();
+    if(Math.floor(totalTicks()/3) > before){ const p=document.querySelector("#v-today .pill"); if(p) p.animate([{transform:"scale(1)"},{transform:"scale(1.18)"},{transform:"scale(1)"}],{duration:450,easing:"cubic-bezier(.3,1.6,.5,1)"}); }
+    return;
+  }
+  if(d.hole){
+    const c = state.cards.find(x=>x.id===d.hole); if(!c || c.done) return;
+    if(d.on==="1"){ c.filled=Math.max(0,(+c.filled||0)-1); ui.toast="Дырочка вернулась в запас"; }
+    else if(freeHoles()>0 && (+c.filled||0)<c.holes){ c.filled=(+c.filled||0)+1; ui.pop={id:c.id,i:c.filled-1}; ui.toast=c.filled>=c.holes?"Карточка заполнена! Можно забрать ништяк":""; }
+    else { ui.toast="Свободных дырочек нет — ещё "+(3-totalTicks()%3)+" "+plural(3-totalTicks()%3,"галочка","галочки","галочек"); renderCards(); return; }
+    persist(); render(); return;
+  }
+  if(d.place){ const c=state.cards.find(x=>x.id===d.place); if(c && freeHoles()>0 && (+c.filled||0)<c.holes){ c.filled=(+c.filled||0)+1; ui.pop={id:c.id,i:c.filled-1}; ui.toast=c.filled>=c.holes?"Карточка заполнена! Можно забрать ништяк":""; persist(); render(); } return; }
+  if(d.claim){ const c=state.cards.find(x=>x.id===d.claim); if(c){ c.done=todayKey; c.filled=c.holes; ui.toast="Ништяк твой. Карточка ушла в коллекцию"; persist(); render(); } return; }
+  if(d.undo){ const c=state.cards.find(x=>x.id===d.undo); if(c){ c.done=null; persist(); render(); } return; }
+  if(d.deck==="next"){ const top=document.querySelector('.dcard[data-pos="0"]'); if(top && ui.order.length>1) flyOut(top,-1); return; }
+  if(d.deck==="prev"){ deckPrev(); return; }
+  if(d.ask){ ui.confirm=d.ask; render(); return; }
+  if(d.cancel){ ui.confirm=null; render(); return; }
+  if(d.delcard){ state.cards=state.cards.filter(c=>c.id!==d.delcard); ui.confirm=null; persist(); render(); return; }
+  if(d.deltask){ state.tasks=state.tasks.filter(t=>t.id!==d.deltask); ui.confirm=null; persist(); render(); return; }
+  if(d.delgoal){ state.goals=state.goals.filter(g=>g.id!==d.delgoal); state.tasks=state.tasks.filter(t=>t.goal!==d.delgoal); ui.confirm=null; persist(); render(); return; }
+  if(d.pal){ ui.cardPal=d.pal; keepOpen(()=>renderCards()); return; }
+  if(d.icon){ ui.cardIcon=d.icon; keepOpen(()=>renderCards()); return; }
+  if(d.gcol){ ui.newGoalColor=d.gcol; keepOpen(()=>renderGoals()); return; }
+  if(d.type){ ui.addType=d.type; ui.err=""; keepOpen(()=>renderGoals()); return; }
+  if(d.wd!==undefined){ const i=+d.wd; ui.addDays = ui.addDays.includes(i) ? ui.addDays.filter(x=>x!==i) : ui.addDays.concat(i); keepOpen(()=>renderGoals()); return; }
+  if(d.act==="quick"){
+    const title=val("qTitle"); if(!title){ ui.qerr="Впиши, что сделать"; renderToday(); return; }
+    if(tasksFor(ui.sel).length>=MAX){ ui.qerr="На этот день уже "+MAX+" задач"; renderToday(); return; }
+    state.tasks.push({id:uid(),title,goal:val("qGoal"),type:"once",date:ui.sel,min:""}); ui.qerr=""; persist(); render(); return;
+  }
+  if(d.act==="addtask"){
+    const title=val("tTitle"), goal=val("tGoal"), min=val("tMin");
+    if(!title){ ui.err="Впиши название задачи"; keepOpen(()=>renderGoals(), true); return; }
+    if(ui.addType==="repeat"){
+      if(!ui.addDays.length){ ui.err="Выбери хотя бы один день"; keepOpen(()=>renderGoals(), true); return; }
+      const c = conflictFor("repeat",{days:ui.addDays});
+      if(c){ ui.err=WDL[dow(c)][0].toUpperCase()+WDL[dow(c)].slice(1)+" ("+fmtDate(c)+") уже заполнен: "+MAX+" задач. Убери этот день или другую задачу."; keepOpen(()=>renderGoals(), true); return; }
+      state.tasks.push({id:uid(),title,goal,type:"repeat",days:[...ui.addDays].sort(),from:todayKey,min});
+    } else {
+      const date=val("tDate")||todayKey;
+      if(date<todayKey){ ui.err="Дата уже прошла"; keepOpen(()=>renderGoals(), true); return; }
+      if(conflictFor("once",{date})){ ui.err=fmtDate(date)+" уже "+MAX+" задач. Выбери другой день."; keepOpen(()=>renderGoals(), true); return; }
+      state.tasks.push({id:uid(),title,goal,type:"once",date,min});
+    }
+    ui.addGoal=goal; ui.err=""; persist(); render(); return;
+  }
+  if(d.act==="addgoal"){
+    const name=val("gName"); if(!name){ const el=document.getElementById("gName"); el.placeholder="Сначала впиши название"; el.focus(); return; }
+    const id=uid(); state.goals.push({id,name,color:ui.newGoalColor}); ui.addGoal=id; persist(); render(); return;
+  }
+  if(d.act==="addcard"){
+    const title=val("cTitle"); if(!title){ const el=document.getElementById("cTitle"); el.placeholder="Сначала впиши цель"; el.focus(); return; }
+    const c={id:uid(),title,reward:val("cReward"),holes:+val("cHoles")||6,pal:ui.cardPal,icon:ui.cardIcon,filled:0,done:null};
+    state.cards.push(c); ui.order=[c.id].concat(ui.order.filter(x=>x!==c.id)); ui.toast="Новая карточка сверху колоды"; persist(); render(); window.scrollTo({top:0,behavior:"smooth"}); return;
+  }
+}, true);
+
+// перерисовать форму, не потеряв набранный текст и открытые панели
+function keepOpen(fn, forceOpen){
+  const vals={}; document.querySelectorAll(".inp").forEach(el=>{ if(el.id) vals[el.id]=el.value; });
+  const open=[...document.querySelectorAll("details.panel")].map(x=>x.open);
+  fn();
+  document.querySelectorAll(".inp").forEach(el=>{ if(el.id && vals[el.id]!==undefined && el.id!=="tDate"||(el.id==="tDate"&&vals.tDate)) el.value=vals[el.id]; });
+  const ds=[...document.querySelectorAll("details.panel")]; ds.forEach((x,i)=>{ if(open[i]) x.open=true; });
+}
+document.addEventListener("change", e=>{
+  const id = e.target.dataset && e.target.dataset.rw; if(!id) return;
+  const c = state.cards.find(x=>x.id===id); const v=e.target.value.trim();
+  if(c && c.reward!==v){ c.reward=v; persist(); }
+});
+document.addEventListener("keydown", e=>{
+  if(ui.tab!=="cards" || e.target.closest("input,select,textarea")) return;
+  if(e.key==="ArrowRight"){ const top=document.querySelector('.dcard[data-pos="0"]'); if(top && ui.order.length>1) flyOut(top,1); }
+  if(e.key==="ArrowLeft") deckPrev();
+});
+
+/* ---------- копия данных и офлайн ---------- */
+document.getElementById("exportBtn").addEventListener("click", ()=>{
+  const blob = new Blob([JSON.stringify(state,null,1)], {type:"application/json"});
+  const a = document.createElement("a"); a.href = URL.createObjectURL(blob);
+  a.download = "zimniy-ark-"+todayKey+".json"; document.body.appendChild(a); a.click();
+  setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+  document.getElementById("backupMsg").textContent = "Копия сохранена в загрузки";
+});
+document.getElementById("importInp").addEventListener("change", async e=>{
+  const f = e.target.files && e.target.files[0]; if(!f) return;
+  const msg = document.getElementById("backupMsg");
+  try{ const d = JSON.parse(await f.text()); if(!d || (!d.cards && !d.tasks)) throw 0;
+    state = normalize(d); persist(); render(); msg.textContent = "Копия загружена"; }
+  catch(_){ msg.textContent = "Этот файл не похож на копию трекера"; }
+  e.target.value = "";
+});
+if(navigator.storage && navigator.storage.persist){ navigator.storage.persist().catch(()=>{}); }
+if("serviceWorker" in navigator && location.protocol!=="file:"){ navigator.serviceWorker.register("sw.js").catch(()=>{}); }
+
+render(); initStore();
+})();
+</script>
+
+</body>
+</html>
