@@ -18,10 +18,10 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Inter:wght@400;500;600;700;800&family=Onest:wght@400;500;600;700&display=swap">
 <style>
-/* Layout: phone-first habit app — one narrow column, three tabs (Сегодня / Карточки / Цели) in a floating bottom bar; reward cards are printed punch cards in a swipeable stack */
+/* Layout: phone-first habit app in Rootine colors — one narrow column, three tabs in a floating bottom bar; reward cards are two-colour punch cards in a swipeable stack */
 :root{
   --bg:#F4F7F0; --surface:#FFFFFF; --surface2:#EAEFE3; --ink:#3A322C; --muted:#8B7E74; --line:#E3E6DC;
-  --accent:#9CBA7F; --accent-ink:#22301A; --danger:#D97C5B;
+  --accent:#9CBA7F; --accent-ink:#22301A; --seed:#fd834e; --danger:#D97C5B;
   --shadow:0 1px 8px rgba(58,50,44,.04),0 2px 16px rgba(58,50,44,.06);
   --head:"Inter","Onest",system-ui,sans-serif;
   --body:"Inter","Onest",system-ui,-apple-system,"Segoe UI",sans-serif;
@@ -29,11 +29,11 @@
 }
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
   --bg:#1D1A17; --surface:#2A2622; --surface2:#35302A; --ink:#F3EEE8; --muted:#AA9D92; --line:#3A342E;
-  --accent:#A9C78C; --accent-ink:#1F2A16; --danger:#E8906F;
+  --accent:#A9C78C; --accent-ink:#1F2A16; --seed:#fd834e; --danger:#E8906F;
   --shadow:0 1px 8px rgba(0,0,0,.25),0 4px 20px rgba(0,0,0,.35); color-scheme:dark}}
 :root[data-theme="dark"]{
   --bg:#1D1A17; --surface:#2A2622; --surface2:#35302A; --ink:#F3EEE8; --muted:#AA9D92; --line:#3A342E;
-  --accent:#A9C78C; --accent-ink:#1F2A16; --danger:#E8906F;
+  --accent:#A9C78C; --accent-ink:#1F2A16; --seed:#fd834e; --danger:#E8906F;
   --shadow:0 1px 8px rgba(0,0,0,.25),0 4px 20px rgba(0,0,0,.35); color-scheme:dark}
 
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -46,7 +46,6 @@ body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15p
 h1,h2,h3{font-family:var(--head);font-weight:700;margin:0;text-wrap:balance}
 h1{font-size:30px;font-weight:800;letter-spacing:-.02em}
 h2{font-size:17px}
-h3{font-size:15px}
 .eyebrow{font-size:13px;font-weight:600;color:var(--muted)}
 .muted{color:var(--muted)}
 .small{font-size:13px}
@@ -55,21 +54,25 @@ button{cursor:pointer}
 :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .top{display:flex;justify-content:space-between;align-items:flex-end;gap:12px}
 .panel{background:var(--surface);border-radius:32px;padding:18px;box-shadow:var(--shadow)}
-.pill{display:inline-flex;align-items:center;gap:6px;padding:7px 12px;border-radius:99px;background:var(--surface);box-shadow:var(--shadow);font-weight:600;font-size:13px;white-space:nowrap}
+.panel-h{display:flex;justify-content:space-between;align-items:center;gap:10px;width:100%;border:0;background:transparent;padding:0;font-family:var(--head);font-weight:700;font-size:15px;text-align:left}
+.panel-h span:last-child{font-size:22px;font-weight:400;color:var(--muted)}
+.pill{display:inline-flex;align-items:center;gap:6px;padding:7px 12px;border-radius:99px;background:var(--surface);box-shadow:var(--shadow);font-weight:600;font-size:13px;white-space:nowrap;border:0}
 .pill svg{width:16px;height:16px}
 .btn{border:0;border-radius:16px;padding:12px 16px;background:var(--accent);color:var(--accent-ink);font-weight:700}
 .btn:disabled{opacity:.4;cursor:default}
 .btn.soft{background:var(--surface2);color:var(--ink)}
 .btn.sm{padding:8px 12px;border-radius:12px;font-size:13px}
-.x{border:0;background:transparent;color:var(--muted);width:32px;height:32px;border-radius:10px;font-size:18px;line-height:1;flex:none}
+.btn.del{background:var(--danger);color:#fff}
+.x{border:0;background:transparent;color:var(--muted);width:32px;height:32px;border-radius:10px;font-size:17px;line-height:1;flex:none;display:grid;place-items:center}
 .x:hover{background:var(--surface2);color:var(--ink)}
+.x svg{width:17px;height:17px}
 
 /* progress */
 .prog{display:grid;grid-template-columns:76px minmax(0,1fr);gap:16px;align-items:center}
 .ring{width:76px;height:76px}
 .ring circle{fill:none;stroke-width:9;stroke-linecap:round}
 .ring .bg{stroke:var(--surface2)}
-.ring .seg{stroke:#fd834e;transition:stroke-dasharray .35s}
+.ring .seg{stroke:var(--seed)}
 .prog b{font-family:var(--head);font-size:18px;display:block;margin-bottom:2px}
 
 /* week */
@@ -78,11 +81,9 @@ button{cursor:pointer}
 .wd .n{font-family:var(--head);font-size:15px;font-weight:700;font-variant-numeric:tabular-nums}
 .wd .l{font-size:11px;font-weight:600;color:var(--muted)}
 .wd .bar{width:22px;height:4px;border-radius:2px;background:var(--surface2);overflow:hidden}
-.wd .bar i{display:block;height:100%;background:var(--accent)}
+.wd .bar i{display:block;height:100%;background:var(--seed)}
 .wd[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink)}
 .wd[aria-pressed="true"] .l{color:inherit;opacity:.7}
-.wd[aria-pressed="true"] .bar{background:color-mix(in srgb,var(--bg) 25%,transparent)}
-.wd[aria-pressed="true"] .bar i{background:var(--bg)}
 .wd:disabled{opacity:.35;cursor:default}
 
 /* tasks */
@@ -98,12 +99,11 @@ button{cursor:pointer}
 .meta{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:3px;font-size:12px;color:var(--muted)}
 .tag{display:inline-flex;align-items:center;gap:5px;font-weight:600}
 .tag::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--g)}
-.empty{padding:22px;text-align:center;border:2px dashed var(--line);border-radius:20px;color:var(--muted)}
+.empty{padding:22px;text-align:center;border:2px dashed var(--line);border-radius:24px;color:var(--muted)}
 
 /* forms */
 .form{display:flex;flex-direction:column;gap:12px}
 .row{display:flex;gap:10px;flex-wrap:wrap}
-.row>*{flex:1 1 140px;min-width:0}
 .field{display:flex;flex-direction:column;gap:5px}
 .field label,.lbl{font-size:12px;font-weight:600;color:var(--muted)}
 .inp{width:100%;border:0;background:var(--surface2);border-radius:14px;padding:11px 12px;min-width:0}
@@ -111,62 +111,73 @@ button{cursor:pointer}
 .seg button{border:0;background:transparent;border-radius:10px;padding:8px;font-weight:600;font-size:14px}
 .seg button[aria-pressed="true"]{background:var(--surface);box-shadow:var(--shadow)}
 .days{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}
-.days button{border:0;background:var(--surface2);border-radius:12px;padding:9px 0;font-weight:700;font-size:13px}
-.days button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink)}
-.err{color:var(--danger);font-size:13px;font-weight:600;min-height:0}
+.days button,.weights button{border:0;background:var(--surface2);border-radius:12px;padding:9px 0;font-weight:700;font-size:13px}
+.days button[aria-pressed="true"],.weights button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink)}
+.weights{display:grid;grid-template-columns:repeat(6,1fr);gap:6px}
+.err{color:var(--danger);font-size:13px;font-weight:600;margin:0}
 .err:empty{display:none}
 .dots{display:flex;gap:8px;flex-wrap:wrap}
 .dot{width:30px;height:30px;border-radius:50%;border:3px solid transparent;padding:0;background:var(--c)}
+.dot.s{width:28px;height:28px}
 .dot[aria-pressed="true"]{border-color:var(--surface);box-shadow:0 0 0 2px var(--ink)}
-details.panel>summary{list-style:none;cursor:pointer;display:flex;justify-content:space-between;align-items:center;font-family:var(--head);font-weight:700;font-size:15px}
-details.panel>summary::-webkit-details-marker{display:none}
-details.panel>summary::after{content:"+";font-size:22px;font-family:var(--body);color:var(--muted)}
-details.panel[open]>summary::after{content:"–"}
-details.panel[open]>summary{margin-bottom:14px}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chipb{border:0;background:var(--surface2);border-radius:99px;padding:7px 12px 7px 9px;font-size:13px;font-weight:600;display:inline-flex;align-items:center;gap:6px;--eye:var(--surface2)}
+.chipb svg{width:18px;height:18px}
+.chipb[aria-pressed="true"]{background:var(--ink);color:var(--bg);--eye:var(--ink)}
+.pairs{display:flex;gap:8px;flex-wrap:wrap}
+.pair{width:52px;height:34px;border-radius:9px;border:3px solid transparent;padding:0;overflow:hidden;display:grid;grid-template-columns:1fr 1fr;box-shadow:var(--shadow)}
+.pair[aria-pressed="true"]{border-color:var(--ink)}
+.ic{width:40px;height:40px;border-radius:12px;border:3px solid transparent;background:var(--surface2);display:grid;place-items:center;padding:0;--eye:var(--surface2)}
+.ic svg{width:24px;height:24px}
+.ic[aria-pressed="true"]{border-color:var(--ink)}
+.sub-h{font-size:12px;font-weight:700;color:var(--muted);margin-bottom:6px}
+details.more>summary{cursor:pointer;font-size:13px;font-weight:600;color:var(--muted);list-style:none}
+details.more>summary::-webkit-details-marker{display:none}
+details.more>summary::before{content:"+ "}
+details.more[open]>summary::before{content:"– "}
+details.more[open]>summary{margin-bottom:12px}
 
 /* goals */
 .goal{display:flex;flex-direction:column;gap:8px}
-.goal-h{display:flex;align-items:center;gap:10px}
+.goal-h{display:flex;align-items:center;gap:8px}
 .goal-h .sq{width:14px;height:14px;border-radius:5px;background:var(--g);flex:none}
 .goal-h h2{flex:1;min-width:0}
-.trow{display:flex;align-items:center;gap:10px;background:var(--surface);border-radius:16px;padding:10px 8px 10px 14px;box-shadow:var(--shadow)}
+.trow{display:flex;align-items:center;gap:4px;background:var(--surface);border-radius:18px;padding:10px 6px 10px 14px;box-shadow:var(--shadow)}
 .trow>div{flex:1;min-width:0}
+.edit-box{background:var(--surface);border-radius:24px;padding:16px;box-shadow:var(--shadow);border:2px solid var(--accent)}
 .inline-confirm{display:flex;gap:6px;align-items:center;flex-wrap:wrap;font-size:13px;font-weight:600}
 
-/* deck of punch cards */
+/* deck of punch cards: left colour L, right colour R, each used as the other's ink */
 .deck{position:relative;height:244px;margin-top:4px}
 .dcard{position:absolute;left:0;right:0;top:0;height:206px;transform-origin:50% 90%;transition:transform .34s cubic-bezier(.2,.8,.25,1),opacity .3s;touch-action:pan-y;user-select:none;-webkit-user-select:none}
 .dcard:not([data-pos="0"]){pointer-events:none}
-.pcard{position:relative;height:100%;display:grid;grid-template-columns:minmax(0,1fr) auto;border-radius:10px;overflow:hidden;box-shadow:0 2px 4px rgba(0,0,0,.08),0 18px 30px -18px rgba(0,0,0,.45)}
-.pcard .face{background:var(--c-l);color:var(--c-t);padding:18px 16px 16px 18px;display:flex;flex-direction:column;gap:6px;min-width:0}
+.pcard{position:relative;height:206px;display:grid;grid-template-columns:minmax(0,1fr) auto;border-radius:10px;overflow:hidden;box-shadow:0 2px 4px rgba(0,0,0,.08),0 18px 30px -18px rgba(0,0,0,.45)}
+.pcard .face{background:var(--L);color:var(--R);padding:18px 16px 16px 18px;display:flex;flex-direction:column;gap:6px;min-width:0}
 .pcard .ttl{font-family:var(--print);font-size:clamp(19px,5.4vw,24px);line-height:1;text-transform:uppercase;overflow-wrap:break-word;hyphens:auto;-webkit-hyphens:auto}
-.pcard .sub{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;opacity:.75}
+.pcard .sub{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;opacity:.8}
 .pcard .rw{margin-top:auto;display:flex;flex-direction:column;gap:2px}
 .pcard .rw label{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase}
-.pcard .rw input{background:transparent;border:0;border-bottom:1.5px solid currentColor;color:inherit;font:600 14px/1.4 var(--body);padding:2px 0 3px;width:100%;border-radius:0}
+.pcard .rw input,.pcard .rw .rv{display:block;background:transparent;border:0;border-bottom:1.5px solid currentColor;color:inherit;font:600 14px/1.4 var(--body);padding:2px 0 3px;width:100%;border-radius:0;min-height:24px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
 .pcard .rw input::placeholder{color:inherit;opacity:.5}
 .pcard .rw .ln{height:1.5px;background:currentColor;margin-top:13px}
-.pcard .holes{background:var(--c-r);display:grid;grid-template-columns:repeat(2,38px);grid-auto-rows:38px;gap:4px 10px;padding:14px;align-content:center;border-left:2px dashed color-mix(in srgb,var(--c-i) 40%,transparent)}
-.hole{border:0;background:transparent;padding:0;display:grid;place-items:center;border-radius:50%}
-.hole .o{width:28px;height:28px;border-radius:50%;border:2px dashed var(--c-i);opacity:.55;transition:transform .15s}
-.hole:hover .o{transform:scale(1.12);opacity:.9}
-.hole svg{width:32px;height:32px;color:var(--c-i)}
+.pcard .holes{background:var(--R);--eye:var(--R);display:grid;grid-template-columns:repeat(2,40px);grid-auto-rows:40px;gap:8px 10px;padding:14px 16px;align-content:center;border-left:2px dashed color-mix(in srgb,var(--L) 45%,transparent)}
+.hole{border:0;background:transparent;padding:0;display:grid;place-items:center;border-radius:50%;color:var(--L)}
+.hole .o{width:30px;height:30px;border-radius:50%;border:2px dashed var(--L);opacity:.6;transition:transform .15s}
+.hole:hover .o{transform:scale(1.12);opacity:.95}
+.hole svg{width:34px;height:34px}
 .hole.pop svg{animation:pop .5s cubic-bezier(.3,1.7,.5,1)}
 @keyframes pop{0%{transform:scale(0) rotate(-50deg)}100%{transform:scale(1) rotate(0)}}
-.pcard .stamp{position:absolute;left:38%;top:50%;transform:translate(-50%,-50%) rotate(-12deg);font-family:var(--print);font-size:24px;color:var(--c-t);border:3px solid var(--c-t);padding:3px 12px;border-radius:6px;background:color-mix(in srgb,var(--c-l) 75%,transparent);text-transform:uppercase;pointer-events:none}
+.pcard .stamp{position:absolute;left:38%;top:50%;transform:translate(-50%,-50%) rotate(-12deg);font-family:var(--print);font-size:24px;color:var(--R);border:3px solid var(--R);padding:3px 12px;border-radius:6px;background:color-mix(in srgb,var(--L) 80%,transparent);text-transform:uppercase;pointer-events:none}
+.preview{pointer-events:none}
 .deckbar{display:flex;align-items:center;justify-content:space-between;gap:10px}
 .nav{width:44px;height:44px;border-radius:50%;border:0;background:var(--surface);box-shadow:var(--shadow);font-size:20px;display:grid;place-items:center}
 .cnt{font-family:var(--head);font-weight:700;font-variant-numeric:tabular-nums}
-.toast{font-size:13px;font-weight:600;text-align:center;min-height:18px;color:var(--muted)}
+.toast{font-size:13px;font-weight:600;text-align:center;min-height:18px;color:var(--muted);margin:0}
 .coll{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
-.mini{border-radius:14px;padding:12px;background:var(--c-l);color:var(--c-t);display:flex;flex-direction:column;gap:6px;min-height:96px}
-.mini b{font-family:var(--print);font-weight:400;font-size:15px;line-height:1;text-transform:uppercase;overflow-wrap:anywhere}
+.mini{border-radius:14px;padding:12px;background:var(--L);color:var(--R);display:flex;flex-direction:column;gap:6px;min-height:96px}
+.mini b{font-family:var(--print);font-weight:400;font-size:15px;line-height:1;text-transform:uppercase;overflow-wrap:break-word;hyphens:auto}
 .mini span{font-size:12px;font-weight:600}
 .mini button{margin-top:auto;align-self:flex-start;border:1.5px solid currentColor;background:transparent;color:inherit;border-radius:99px;padding:3px 10px;font-size:12px;font-weight:600}
-.sw{width:44px;height:30px;border-radius:8px;border:3px solid transparent;padding:0;overflow:hidden;display:grid;grid-template-columns:1fr 1fr}
-.sw[aria-pressed="true"],.ic[aria-pressed="true"]{border-color:var(--ink)}
-.ic{width:40px;height:40px;border-radius:12px;border:3px solid transparent;background:var(--surface2);display:grid;place-items:center;padding:0}
-.ic svg{width:22px;height:22px}
 
 /* tab bar */
 .tabs{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(14px + env(safe-area-inset-bottom,0px));z-index:20;display:flex;gap:4px;padding:6px;background:color-mix(in srgb,var(--surface) 88%,transparent);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-radius:24px;box-shadow:0 10px 30px -10px rgba(0,0,0,.35);width:min(360px,calc(100% - 32px))}
@@ -181,14 +192,16 @@ details.panel[open]>summary{margin-bottom:14px}
 
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
-  <symbol id="i-flower" viewBox="0 0 24 24"><g stroke="currentColor" stroke-width="4.4" stroke-linecap="round"><path d="M12 3v18M3 12h18M5.6 5.6l12.8 12.8M18.4 5.6L5.6 18.4"/></g></symbol>
   <symbol id="i-heart" viewBox="0 0 24 24"><path fill="currentColor" d="M12 21s-7.6-4.6-9.6-9.3C1 8 3.4 4.4 7 4.4c2 0 3.5 1.1 5 3 1.5-1.9 3-3 5-3 3.6 0 6 3.6 4.6 7.3C19.6 16.4 12 21 12 21z"/></symbol>
-  <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5.2" fill="currentColor"/><g stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 1.8v3M12 19.2v3M1.8 12h3M19.2 12h3M4.8 4.8l2.1 2.1M17.1 17.1l2.1 2.1M4.8 19.2l2.1-2.1M17.1 6.9l2.1-2.1"/></g></symbol>
-  <symbol id="i-clover" viewBox="0 0 24 24"><g fill="currentColor"><circle cx="8.3" cy="8.3" r="4.6"/><circle cx="15.7" cy="8.3" r="4.6"/><circle cx="8.3" cy="15.4" r="4.6"/><circle cx="15.7" cy="15.4" r="4.6"/></g><path d="M14 17l4 5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></symbol>
+  <symbol id="i-flower" viewBox="0 0 24 24"><g stroke="currentColor" stroke-width="4.4" stroke-linecap="round"><path d="M12 3v18M3 12h18M5.6 5.6l12.8 12.8M18.4 5.6L5.6 18.4"/></g></symbol>
   <symbol id="i-star" viewBox="0 0 24 24"><path fill="currentColor" d="M12 1.8l3 6.8 7.3.6-5.6 4.8 1.7 7.2L12 17.4l-6.4 3.8 1.7-7.2-5.6-4.8 7.3-.6z"/></symbol>
-  <symbol id="i-brush" viewBox="0 0 24 24"><path fill="currentColor" d="M20.6 2.2c.7.6.6 1.6-.1 2.4l-8 8.6-2.9-2.6 7.9-8.5c.8-.8 2.3-.6 3.1.1zM8.4 12.2l2.9 2.6c-.3 3.6-2.7 6.4-7.9 6.6.9-1.2 1-2.5 1.2-3.8.3-2.4 1.6-4.9 3.8-5.4z"/></symbol>
   <symbol id="i-cup" viewBox="0 0 24 24"><path fill="currentColor" d="M3 8h14v5.5A6.5 6.5 0 0 1 10.5 20h-1A6.5 6.5 0 0 1 3 13.5zm14 1.5h1.5a3 3 0 0 1 0 6H16.6l.4-2h1.5a1 1 0 0 0 0-2H17z"/><path d="M7 2.5c-.8 1 .8 1.6 0 3M11 2.5c-.8 1 .8 1.6 0 3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" fill="none"/></symbol>
+  <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5.2" fill="currentColor"/><g stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 1.8v3M12 19.2v3M1.8 12h3M19.2 12h3M4.8 4.8l2.1 2.1M17.1 17.1l2.1 2.1M4.8 19.2l2.1-2.1M17.1 6.9l2.1-2.1"/></g></symbol>
+  <symbol id="i-frog" viewBox="0 0 24 24"><g fill="currentColor"><circle cx="7" cy="8" r="3.9"/><circle cx="17" cy="8" r="3.9"/><ellipse cx="12" cy="14.6" rx="10" ry="6.6"/></g><g fill="var(--eye,#fff)"><circle cx="7" cy="7.8" r="1.7"/><circle cx="17" cy="7.8" r="1.7"/></g><path d="M7.5 15.5q4.5 3.4 9 0" fill="none" stroke="var(--eye,#fff)" stroke-width="1.7" stroke-linecap="round"/></symbol>
+  <symbol id="i-bee" viewBox="0 0 24 24"><g fill="currentColor"><ellipse cx="6.6" cy="7" rx="4" ry="2.8" transform="rotate(-25 6.6 7)" opacity=".55"/><ellipse cx="17.4" cy="7" rx="4" ry="2.8" transform="rotate(25 17.4 7)" opacity=".55"/><ellipse cx="12" cy="14" rx="6.3" ry="7.6"/></g><g stroke="var(--eye,#fff)" stroke-width="1.9" stroke-linecap="round"><path d="M7.2 12h9.6M7.2 16h9.6"/></g><path d="M10 6.6L8.6 3.4M14 6.6l1.4-3.2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" fill="none"/></symbol>
+  <symbol id="i-cat" viewBox="0 0 24 24"><path fill="currentColor" d="M3.8 9.4L4.6 2.6 9.6 6.6Q12 6 14.4 6.6L19.4 2.6 20.2 9.4Q21.6 12 21 15.2 19.6 21 12 21 4.4 21 3 15.2 2.4 12 3.8 9.4Z"/><g fill="var(--eye,#fff)"><ellipse cx="8.7" cy="12.6" rx="1.35" ry="1.8"/><ellipse cx="15.3" cy="12.6" rx="1.35" ry="1.8"/><path d="M10.8 15.6h2.4L12 17z"/></g></symbol>
   <symbol id="i-check" viewBox="0 0 24 24"><path d="M4.5 12.5l5 5 10-11" fill="none" stroke="currentColor" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-pen" viewBox="0 0 24 24"><path d="M4 20l1-4.5L15.5 5a2.1 2.1 0 0 1 3 3L8 18.5z M13.5 7l3 3" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></symbol>
   <symbol id="i-punch" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2.2" stroke-dasharray="3 2.4"/><circle cx="12" cy="12" r="4" fill="currentColor"/></symbol>
   <symbol id="t-today" viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15.5" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8 3v4M16 3v4M8 13l3 3 5-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
   <symbol id="t-cards" viewBox="0 0 24 24"><rect x="5" y="7" width="15" height="12" rx="3" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8 4h9a3 3 0 0 1 3 3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="16" cy="13" r="1.6" fill="currentColor"/></symbol>
@@ -201,8 +214,8 @@ details.panel[open]>summary{margin-bottom:14px}
   <section class="view" id="v-goals" aria-label="Цели" hidden></section>
   <p class="sync" id="sync" style="margin-top:22px">Загружаю сохранённое…</p>
   <div class="row" style="justify-content:center;margin-top:8px">
-    <button type="button" class="btn sm soft" id="exportBtn" style="flex:0 0 auto">Скачать копию</button>
-    <label class="btn sm soft" style="flex:0 0 auto;cursor:pointer">Загрузить копию<input type="file" id="importInp" accept="application/json,.json" hidden></label>
+    <button type="button" class="btn sm soft" id="exportBtn">Скачать копию</button>
+    <label class="btn sm soft" style="cursor:pointer">Загрузить копию<input type="file" id="importInp" accept="application/json,.json" hidden></label>
   </div>
   <p class="sync" id="backupMsg"></p>
 </div>
@@ -216,18 +229,31 @@ details.panel[open]>summary{margin-bottom:14px}
 <script>
 (function(){
 "use strict";
-const MAX = 5;
-const PAL = {
-  navy:{l:"#1F2A6B",t:"#F1E36B",r:"#BFE3F0",i:"#1F2A6B"}, pink:{l:"#F6D3D1",t:"#28307A",r:"#F6D3D1",i:"#C2362B"},
-  sage:{l:"#EEEBDD",t:"#173B2A",r:"#EEEBDD",i:"#2E6B45"}, ember:{l:"#F3E9E0",t:"#C2361F",r:"#D2451E",i:"#F2C230"},
-  sky:{l:"#D3ECF2",t:"#E07A1F",r:"#F08A24",i:"#B5E27A"}, peri:{l:"#8EA0F0",t:"#2B1A10",r:"#4A1E12",i:"#8EA0F0"},
-  cocoa:{l:"#4A1714",t:"#F2B8D8",r:"#F2B8D8",i:"#E0303A"}, lemon:{l:"#F4E36A",t:"#1F2A6B",r:"#1F2A6B",i:"#F4E36A"}
+const MAX = 5, MAXP = 6;
+const ICONS = ["heart","flower","star","cup","sun","frog","bee","cat"];
+const ICON_NAMES = {heart:"сердце",flower:"цветок",star:"звезда",cup:"кофе",sun:"солнце",frog:"лягушка",bee:"пчела",cat:"котик"};
+const CATS = [
+  {k:"event",name:"Мероприятие",icon:"star"}, {k:"buy",name:"Покупка",icon:"heart"},
+  {k:"food",name:"Гастропоход",icon:"cup"},   {k:"active",name:"Активность",icon:"sun"},
+  {k:"walk",name:"Прогулка",icon:"bee"},      {k:"rest",name:"Отдых",icon:"cat"},
+  {k:"art",name:"Творчество",icon:"flower"},  {k:"surprise",name:"Сюрприз",icon:"frog"}
+];
+// пары [слева, справа]; каждый цвет служит текстом/значком для другого
+const PAIRS = {
+  light:[["#F6D3D1","#C2362B"],["#BFE3F0","#1F2A6B"],["#EEEBDD","#1F4D33"],["#DCD3F5","#4A3A8C"],["#E3EDD6","#4F6B3A"]],
+  mid:  [["#F1E36B","#1F2A6B"],["#8EA0F0","#3B1A10"],["#F08A24","#FFF0DA"],["#9CBA7F","#2B3A20"],["#F2B8D8","#7A1E3A"]],
+  heavy:[["#1F2A6B","#F1E36B"],["#4A1714","#F2B8D8"],["#C2361F","#F6E8DA"],["#1F4D33","#C5E68A"],["#2B1A10","#FD834E"]]
 };
-const ICONS = ["flower","heart","sun","clover","star","brush","cup"];
+const GROUP_NAME = {light:"лёгкая",mid:"средняя",heavy:"тяжёлая"};
+const GROUP_GEN = {light:"лёгкой",mid:"средней",heavy:"тяжёлой"};
+const SWATCHES = [...new Set(Object.values(PAIRS).flat(2))];
 const GCOL = ["#9CBA7F","#fd834e","#E8B4BC","#E8B86D","#D4956E","#8FB3C4"];
 const OLD_GCOL = ["#5B5BD6","#E0633A","#2F9E6B","#D9A21B","#C74A8B","#3A8FD1"];
+const OLD_ICON = {clover:"frog",brush:"flower"};
+const ICON_CAT = {star:"event",heart:"buy",cup:"food",sun:"active",bee:"walk",cat:"rest",flower:"art",frog:"surprise",brush:"art",clover:"surprise"};
 const WD = ["Пн","Вт","Ср","Чт","Пт","Сб","Вс"];
 const WDL = ["понедельник","вторник","среда","четверг","пятница","суббота","воскресенье"];
+const WDA = ["понедельник","вторник","среду","четверг","пятницу","субботу","воскресенье"];
 const MON = ["января","февраля","марта","апреля","мая","июня","июля","августа","сентября","октября","ноября","декабря"];
 
 const pad = n => String(n).padStart(2,"0");
@@ -241,13 +267,25 @@ const uid = () => Math.random().toString(36).slice(2,10);
 const esc = s => String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const svg = n => '<svg aria-hidden="true"><use href="#i-'+n+'"/></svg>';
 const clone = o => JSON.parse(JSON.stringify(o));
+const cap = s => s.charAt(0).toUpperCase()+s.slice(1);
 function plural(n,a,b,c){ const m=n%10,h=n%100; if(m===1&&h!==11) return a; if(m>=2&&m<=4&&(h<12||h>14)) return b; return c; }
+const punches = n => n+" "+plural(n,"панч","панча","панчей");
+const ticksW = n => n+" "+plural(n,"галочка","галочки","галочек");
 function fmtDate(k){ const d=parse(k); return d.getDate()+" "+MON[d.getMonth()]; }
+const catOf = k => CATS.find(c=>c.k===k) || CATS[7];
+const groupOf = h => h<=2 ? "light" : h<=4 ? "mid" : "heavy";
+
+function autoPair(holes, cards, exceptId){
+  const g = groupOf(holes), list = PAIRS[g];
+  const used = cards.filter(c=>c.id!==exceptId && groupOf(c.holes)===g).map(c=>c.L+c.R);
+  const free = list.find(p=>!used.includes(p[0]+p[1]));
+  return free || list[used.length % list.length];
+}
 
 function defaults(){
   const g1=uid(), g2=uid(), g3=uid();
   const rep = (title,goal,days,min) => ({id:uid(),title,goal,type:"repeat",days,from:mondayKey,min});
-  return { v:2, rev:0, legacy:0, done:{},
+  const s = { v:3, rev:0, legacy:0, done:{},
     goals:[{id:g1,name:"Методичка и блог",color:GCOL[0]},{id:g2,name:"Комикс",color:GCOL[1]},{id:g3,name:"Здоровье",color:GCOL[2]}],
     tasks:[
       rep("Пост в Threads",g1,[0,1,2,3,4,5,6],"хотя бы одно предложение"),
@@ -256,49 +294,64 @@ function defaults(){
       rep("1 сцена сюжета",g2,[1,3],"3 предложения"),
       rep("Силовая 20 минут",g3,[0,3],"надеть кроссовки и 5 приседаний"),
       rep("Сон до 23:00",g3,[1,2,4,5,6],"лечь на 15 минут раньше")
-    ],
-    cards:[
-      {id:uid(),title:"Первая неделя",reward:"Кофе и десерт в Voronka",holes:2,pal:"navy",icon:"flower",filled:0,done:null},
-      {id:uid(),title:"Творческая девчонка",reward:"Музей искусств Алматы + кофе в JER",holes:4,pal:"pink",icon:"brush",filled:0,done:null},
-      {id:uid(),title:"Пишу каждый день",reward:"Красивый блокнот и маркеры",holes:4,pal:"sage",icon:"star",filled:0,done:null},
-      {id:uid(),title:"Выйти из ступора",reward:"Канатка на Шымбулак",holes:6,pal:"ember",icon:"sun",filled:0,done:null},
-      {id:uid(),title:"Живу интересно",reward:"Дизайнерская мелочь домой до 1000 ₽",holes:6,pal:"cocoa",icon:"heart",filled:0,done:null},
-      {id:uid(),title:"Зимний арк пройден",reward:"День без дел + любимый фильм",holes:8,pal:"sky",icon:"clover",filled:0,done:null}
-    ]};
+    ], cards:[] };
+  const mk = (title,reward,holes,cat) => { const c={id:uid(),title,reward,holes,cat,icon:catOf(cat).icon,filled:0,done:null}; const p=autoPair(holes,s.cards); c.L=p[0]; c.R=p[1]; s.cards.push(c); };
+  mk("Первая неделя","Кофе и десерт в Voronka",2,"food");
+  mk("Творческая девчонка","Музей искусств Алматы + кофе в JER",4,"event");
+  mk("Пишу каждый день","Красивый блокнот и маркеры",3,"buy");
+  mk("Выйти из ступора","Канатка на Шымбулак",6,"active");
+  mk("Живу интересно","Дизайнерская мелочь домой до 1000 ₽",5,"buy");
+  mk("Зимний арк пройден","День без дел + любимый фильм",6,"rest");
+  return s;
+}
+function fixCards(cards){
+  const out = [];
+  for(const c0 of cards){
+    const c = {...c0};
+    c.holes = Math.min(MAXP, Math.max(1, +c.holes||2));
+    c.filled = Math.min(+c.filled||0, c.holes);
+    if(c.icon && OLD_ICON[c.icon]) c.icon = OLD_ICON[c.icon];
+    if(!c.cat) c.cat = ICON_CAT[c0.icon] || "surprise";
+    if(!ICONS.includes(c.icon)) c.icon = catOf(c.cat).icon;
+    if(!c.L || !c.R){ const p=autoPair(c.holes,out); c.L=p[0]; c.R=p[1]; }
+    delete c.pal;
+    out.push(c);
+  }
+  return out;
 }
 function normalize(raw){
   const d = raw && typeof raw==="object" ? clone(raw) : null;
   if(!d) return defaults();
-  if(d.v===2){
-    const s = defaults();
-    return { v:2, rev:+d.rev||0, legacy:+d.legacy||0, done: d.done&&typeof d.done==="object"?d.done:{},
-      goals: Array.isArray(d.goals)?d.goals.map(g=>{ const i=OLD_GCOL.indexOf(g.color); return i>=0?{...g,color:GCOL[i]}:g; }):s.goals, tasks: Array.isArray(d.tasks)?d.tasks:s.tasks,
-      cards: Array.isArray(d.cards)?d.cards.map(c=>({...c, filled:Math.min(+c.filled||0, c.holes)})):s.cards };
+  const s = defaults();
+  if(d.v===2 || d.v===3){
+    return { v:3, rev:+d.rev||0, legacy:+d.legacy||0, done: d.done&&typeof d.done==="object"?d.done:{},
+      goals: Array.isArray(d.goals)?d.goals.map(g=>{ const i=OLD_GCOL.indexOf(g.color); return i>=0?{...g,color:GCOL[i]}:g; }):s.goals,
+      tasks: Array.isArray(d.tasks)?d.tasks:s.tasks,
+      cards: Array.isArray(d.cards)?fixCards(d.cards):s.cards };
   }
-  // старая версия: переносим карточки и количество галочек
-  const s = defaults(); let n=0;
-  if(d.ticks) for(const k in d.ticks){ const t=d.ticks[k]; if(Array.isArray(t)) n+=t.filter(Boolean).length; }
-  s.legacy = n;
-  if(Array.isArray(d.cards)) s.cards = d.cards.map(c=>({...c, filled:0, done:c.done||null}));
+  let n=0; if(d.ticks) for(const k in d.ticks){ const t=d.ticks[k]; if(Array.isArray(t)) n+=t.filter(Boolean).length; }
+  s.legacy=n; if(Array.isArray(d.cards)) s.cards=fixCards(d.cards.map(c=>({...c,filled:0})));
   return s;
 }
 
 let state = defaults();
 try{ const raw=localStorage.getItem("winter-arc-v2")||localStorage.getItem("winter-arc"); if(raw) state=normalize(JSON.parse(raw)); }catch(e){}
 
-const ui = { tab:"today", sel:todayKey, order:[], confirm:null, addType:"repeat", addDays:[0,2,4], addGoal:null,
-  newGoalColor:GCOL[3], cardPal:"peri", cardIcon:"star", toast:"", err:"", qerr:"", pop:null, flyIn:null };
+const blankTask = () => ({id:null,title:"",min:"",goal:null,type:"repeat",days:[0,2,4],date:todayKey,err:""});
+const ui = { tab:"today", sel:todayKey, order:[], confirm:null, toast:"", qerr:"", pop:null, flyIn:null,
+  newTaskOpen:false, newTask:blankTask(), editTask:null, editGoal:null, newGoalOpen:false, newGoal:{name:"",color:GCOL[3],err:""},
+  cf:null, quickOpen:false };
 
 /* ---------- derived ---------- */
-function tasksFor(k){
+function tasksFor(k, except){
   const w = dow(k);
-  return state.tasks.filter(t => t.type==="once" ? t.date===k : (Array.isArray(t.days) && t.days.includes(w) && k >= (t.from||"0")));
+  return state.tasks.filter(t => t.id!==except && (t.type==="once" ? t.date===k : (Array.isArray(t.days) && t.days.includes(w) && k >= (t.from||"0"))));
 }
-function goalOf(id){ return state.goals.find(g=>g.id===id) || {name:"Без цели",color:"#8A8899"}; }
+function goalOf(id){ return state.goals.find(g=>g.id===id) || {name:"Без цели",color:"#A99C91"}; }
 function doneOn(k){ return Array.isArray(state.done[k]) ? state.done[k] : []; }
 function totalTicks(){ let n=state.legacy||0; for(const k in state.done) if(Array.isArray(state.done[k])) n+=state.done[k].length; return n; }
 function placed(){ return state.cards.reduce((a,c)=>a+(c.done?c.holes:(+c.filled||0)),0); }
-function freeHoles(){ return Math.max(0, Math.floor(totalTicks()/3) - placed()); }
+function freeP(){ return Math.max(0, Math.floor(totalTicks()/3) - placed()); }
 function schedText(t){
   if(t.type==="once") return fmtDate(t.date)+(t.date===todayKey?" · сегодня":"");
   const d=[...t.days].sort();
@@ -307,24 +360,24 @@ function schedText(t){
   if(d.join()==="5,6") return "по выходным";
   return d.map(i=>WD[i]).join(", ");
 }
-function conflictFor(type, opts){
-  if(type==="once"){ return tasksFor(opts.date).length >= MAX ? opts.date : null; }
+function conflictFor(type, opts, except){
+  if(type==="once") return tasksFor(opts.date, except).length >= MAX ? opts.date : null;
   const d = new Date(TODAY);
-  for(let i=0;i<120;i++){ const k=key(d); if(opts.days.includes(dow(k)) && tasksFor(k).length >= MAX) return k; d.setDate(d.getDate()+1); }
+  for(let i=0;i<120;i++){ const k=key(d); if(opts.days.includes(dow(k)) && tasksFor(k, except).length >= MAX) return k; d.setDate(d.getDate()+1); }
   return null;
 }
 
-/* ---------- views ---------- */
+/* ---------- today ---------- */
 function renderToday(){
   const k = ui.sel, list = tasksFor(k), done = doneOn(k);
-  const tt = totalTicks(), rem = tt%3, free = freeHoles();
+  const tt = totalTicks(), rem = tt%3, free = freeP();
   const C = 2*Math.PI*30, seg = C/3;
-  const ring = [0,1,2].filter(i=>i<rem).map(i=>'<circle class="seg" cx="38" cy="38" r="30" stroke-dasharray="'+(i<rem?seg-6:0)+' '+C+'" stroke-dashoffset="'+(-i*seg)+'" transform="rotate(-90 38 38)"/>').join("");
+  const ring = [0,1,2].filter(i=>i<rem).map(i=>'<circle class="seg" cx="38" cy="38" r="30" stroke-dasharray="'+(seg-6)+' '+C+'" stroke-dashoffset="'+(-i*seg)+'" transform="rotate(-90 38 38)"/>').join("");
   const monday = parse(mondayKey);
   const week = Array.from({length:7},(_,i)=>{ const d=new Date(monday); d.setDate(monday.getDate()+i); const dk=key(d);
-    const all=tasksFor(dk).length, dn=doneOn(dk).filter(id=>tasksFor(dk).some(t=>t.id===id)).length;
-    return '<button type="button" class="wd" data-day="'+dk+'" aria-pressed="'+(dk===k)+'"'+(d>TODAY?' disabled':'')+' aria-label="'+WDL[i]+', '+dn+' из '+all+'">'+
-      '<span class="l">'+WD[i]+'</span><span class="n">'+d.getDate()+'</span><span class="bar"><i style="width:'+(all?Math.round(dn/all*100):0)+'%"></i></span></button>'; }).join("");
+    const lst=tasksFor(dk), dn=doneOn(dk).filter(id=>lst.some(t=>t.id===id)).length;
+    return '<button type="button" class="wd" data-day="'+dk+'" aria-pressed="'+(dk===k)+'"'+(d>TODAY?' disabled':'')+' aria-label="'+WDL[i]+', '+dn+' из '+lst.length+'">'+
+      '<span class="l">'+WD[i]+'</span><span class="n">'+d.getDate()+'</span><span class="bar"><i style="width:'+(lst.length?Math.round(dn/lst.length*100):0)+'%"></i></span></button>'; }).join("");
   const rows = list.length ? list.map(t=>{ const g=goalOf(t.goal), on=done.includes(t.id);
       return '<button type="button" class="task'+(on?' done':'')+'" data-tick="'+t.id+'" aria-pressed="'+on+'" style="--g:'+g.color+'">'+
         '<span class="check">'+svg("check")+'</span><span><span class="tt">'+esc(t.title)+'</span>'+
@@ -332,28 +385,37 @@ function renderToday(){
     : '<div class="empty">На этот день задач нет. Добавь разовую ниже или повторяющуюся во вкладке «Цели».</div>';
   const isToday = k===todayKey, d=parse(k);
   const goalOpts = state.goals.map(g=>'<option value="'+g.id+'">'+esc(g.name)+'</option>').join("");
+  const nDone = done.filter(id=>list.some(t=>t.id===id)).length;
   document.getElementById("v-today").innerHTML =
     '<div class="top"><div><div class="eyebrow">'+WDL[dow(k)]+', '+fmtDate(k)+'</div><h1>'+(isToday?'Сегодня':WD[dow(k)]+', '+d.getDate())+'</h1></div>'+
-    '<button type="button" class="pill" data-tab="cards">'+svg("punch")+free+' '+plural(free,"дырочка","дырочки","дырочек")+'</button></div>'+
+    '<button type="button" class="pill" data-tab="cards">'+svg("punch")+punches(free)+'</button></div>'+
     '<div class="week" role="group" aria-label="Неделя">'+week+'</div>'+
     '<div class="panel prog"><svg class="ring" viewBox="0 0 76 76" aria-hidden="true"><circle class="bg" cx="38" cy="38" r="30"/>'+ring+'</svg>'+
-      '<div><b>'+(free? (free+' '+plural(free,'дырочка ждёт','дырочки ждут','дырочек ждут')) : ('Ещё '+(3-rem)+' '+plural(3-rem,'галочка','галочки','галочек')))+'</b>'+
-      '<span class="muted small">'+(free?'Открой «Карточки» и выбери, куда поставить. ':'')+'До следующей дырочки '+(3-rem)+' из 3. Сделано за день: '+done.filter(id=>list.some(t=>t.id===id)).length+' из '+list.length+'.</span></div></div>'+
+      '<div><b>'+(free ? punches(free)+' '+plural(free,'ждёт','ждут','ждут') : 'Ещё '+ticksW(3-rem))+'</b>'+
+      '<span class="muted small">'+(free?'Открой «Карточки» и выбери, куда поставить. ':'')+'До следующего панча '+(3-rem)+' из 3. Сделано за день: '+nDone+' из '+list.length+'.</span></div></div>'+
     '<div class="list">'+rows+'</div>'+
-    '<details class="panel"'+(ui.qerr?' open':'')+'><summary>Разовая задача на '+(isToday?'сегодня':fmtDate(k))+'</summary><div class="form">'+
+    '<div class="panel"><button type="button" class="panel-h" data-toggle="quickOpen" aria-expanded="'+ui.quickOpen+'"><span>Разовая задача на '+(isToday?'сегодня':fmtDate(k))+'</span><span>'+(ui.quickOpen?'–':'+')+'</span></button>'+
+    (ui.quickOpen ? '<div class="form" style="margin-top:14px">'+
       '<div class="field"><label for="qTitle">Что сделать</label><input class="inp" id="qTitle" maxlength="60" placeholder="Например: сходить в Целинный"></div>'+
       '<div class="field"><label for="qGoal">Цель</label><select class="inp" id="qGoal">'+goalOpts+'</select></div>'+
       '<p class="err">'+esc(ui.qerr)+'</p>'+
-      '<button type="button" class="btn" data-act="quick"'+(list.length>=MAX?' disabled':'')+'>'+(list.length>=MAX?'На этот день уже '+MAX+' задач':'Добавить · '+list.length+' из '+MAX)+'</button></div></details>';
+      '<button type="button" class="btn" data-act="quick"'+(list.length>=MAX?' disabled':'')+'>'+(list.length>=MAX?'На этот день уже '+MAX+' задач':'Добавить · '+list.length+' из '+MAX)+'</button></div>' : '')+'</div>';
 }
 
-function cardInner(c){
-  const p = PAL[c.pal]||PAL.navy, f = c.done?c.holes:(+c.filled||0);
+/* ---------- cards ---------- */
+function cardInner(c, opts){
+  opts = opts||{};
+  const f = c.done ? c.holes : (opts.fill!=null ? opts.fill : (+c.filled||0));
   let holes=""; for(let i=0;i<c.holes;i++){ const on=i<f, pop = ui.pop && ui.pop.id===c.id && ui.pop.i===i;
-    holes += '<button type="button" class="hole'+(pop?' pop':'')+'" data-hole="'+c.id+'" data-on="'+(on?1:0)+'" aria-label="'+(on?'Закрытая дырочка, убрать':'Пустая дырочка, закрыть')+'"'+(c.done?' disabled':'')+'>'+(on?svg(c.icon):'<span class="o"></span>')+'</button>'; }
-  return '<div class="pcard" style="--c-l:'+p.l+';--c-t:'+p.t+';--c-r:'+p.r+';--c-i:'+p.i+'"><div class="face">'+
-    '<div class="ttl">'+esc(c.title)+'</div><div class="sub">'+f+' из '+c.holes+' · '+(c.holes*3)+' '+plural(c.holes*3,'галочка','галочки','галочек')+'</div>'+
-    '<div class="rw"><label for="rw-'+c.id+'">Награда:</label><input id="rw-'+c.id+'" data-rw="'+c.id+'" value="'+esc(c.reward)+'" maxlength="80" placeholder="впиши ништяк"><div class="ln"></div></div></div>'+
+    holes += opts.preview
+      ? '<span class="hole">'+(on?svg(c.icon):'<span class="o"></span>')+'</span>'
+      : '<button type="button" class="hole'+(pop?' pop':'')+'" data-hole="'+c.id+'" data-on="'+(on?1:0)+'" aria-label="'+(on?'Поставленный панч, вернуть':'Пустое место, поставить панч')+'"'+(c.done?' disabled':'')+'>'+(on?svg(c.icon):'<span class="o"></span>')+'</button>'; }
+  const rw = opts.preview
+    ? '<span class="rv">'+(esc(c.reward)||'&nbsp;')+'</span>'
+    : '<input id="rw-'+c.id+'" data-rw="'+c.id+'" value="'+esc(c.reward)+'" maxlength="80" placeholder="впиши ништяк">';
+  return '<div class="pcard'+(opts.preview?' preview':'')+'" style="--L:'+c.L+';--R:'+c.R+'"><div class="face">'+
+    '<div class="ttl">'+(esc(c.title)||'Название')+'</div><div class="sub">'+catOf(c.cat).name+' · '+f+' из '+punches(c.holes)+'</div>'+
+    '<div class="rw"><label'+(opts.preview?'':' for="rw-'+c.id+'"')+'>Награда:</label>'+rw+'<div class="ln"></div></div></div>'+
     '<div class="holes">'+holes+'</div>'+(c.done?'<div class="stamp">Получено</div>':'')+'</div>';
 }
 const base = p => 'translateY('+(p*16)+'px) scale('+(1-p*.055)+')';
@@ -361,9 +423,36 @@ function syncOrder(){
   const open = state.cards.filter(c=>!c.done).map(c=>c.id);
   ui.order = ui.order.filter(id=>open.includes(id)).concat(open.filter(id=>!ui.order.includes(id)));
 }
+function newCardForm(){
+  const p = autoPair(2, state.cards);
+  return {id:null,title:"",reward:"",cat:"food",holes:2,L:p[0],R:p[1],icon:"cup",iconSet:false,moreOpen:false,err:""};
+}
+function cardForm(){
+  const f = ui.cf, g = groupOf(f.holes);
+  const prev = {...f, id:"preview", filled:0, done:null};
+  return '<div class="panel" id="cardForm"><div class="form">'+
+    '<div class="panel-h"><span>'+(f.id?'Изменить карточку':'Новая карточка')+'</span><span></span></div>'+
+    cardInner(prev,{preview:true, fill:Math.ceil(f.holes/2)})+
+    '<div class="field"><label for="cfTitle">Цель на карточке</label><input class="inp" id="cfTitle" data-cf="title" maxlength="40" value="'+esc(f.title)+'" placeholder="Например: дописать главу"></div>'+
+    '<div class="field"><label for="cfReward">Награда</label><input class="inp" id="cfReward" data-cf="reward" maxlength="80" value="'+esc(f.reward)+'" placeholder="Например: каток на Медеу"></div>'+
+    '<div><div class="sub-h">Категория</div><div class="chips">'+CATS.map(c=>'<button type="button" class="chipb" data-cfcat="'+c.k+'" aria-pressed="'+(f.cat===c.k)+'">'+svg(c.icon)+c.name+'</button>').join("")+'</div></div>'+
+    '<div><div class="sub-h">Вес: '+punches(f.holes)+' = '+ticksW(f.holes*3)+' · '+GROUP_NAME[g]+' карточка</div><div class="weights">'+
+      [1,2,3,4,5,6].map(n=>'<button type="button" data-cfw="'+n+'" aria-pressed="'+(f.holes===n)+'" aria-label="'+punches(n)+'">'+n+'</button>').join("")+'</div></div>'+
+    '<div><div class="sub-h">Сочетания для '+GROUP_GEN[g]+' карточки</div><div class="pairs">'+
+      PAIRS[g].map((p,i)=>'<button type="button" class="pair" data-cfpair="'+i+'" aria-pressed="'+(f.L===p[0]&&f.R===p[1])+'" aria-label="Сочетание '+(i+1)+'"><span style="background:'+p[0]+'"></span><span style="background:'+p[1]+'"></span></button>').join("")+'</div></div>'+
+    '<details class="more"'+(f.moreOpen?' open':'')+' data-cfmore="1"><summary>Свои цвета и значок</summary><div class="form">'+
+      '<div><div class="sub-h">Цвет слева</div><div class="dots">'+SWATCHES.map(c=>'<button type="button" class="dot s" style="--c:'+c+'" data-cfl="'+c+'" aria-pressed="'+(f.L===c)+'" aria-label="Цвет слева"></button>').join("")+'</div></div>'+
+      '<div><div class="sub-h">Цвет справа</div><div class="dots">'+SWATCHES.map(c=>'<button type="button" class="dot s" style="--c:'+c+'" data-cfr="'+c+'" aria-pressed="'+(f.R===c)+'" aria-label="Цвет справа"></button>').join("")+'</div></div>'+
+      '<div><div class="sub-h">Значок (по умолчанию от категории)</div><div class="dots">'+ICONS.map(k=>'<button type="button" class="ic" data-cfi="'+k+'" aria-pressed="'+(f.icon===k)+'" aria-label="'+ICON_NAMES[k]+'">'+svg(k)+'</button>').join("")+'</div></div>'+
+    '</div></details>'+
+    '<p class="err">'+esc(f.err||"")+'</p>'+
+    '<div class="row"><button type="button" class="btn" data-act="savecard" style="flex:1">'+(f.id?'Сохранить':'Добавить карточку')+'</button>'+
+    '<button type="button" class="btn soft" data-act="cancelcard">Отмена</button></div>'+
+  '</div></div>';
+}
 function renderCards(){
   syncOrder();
-  const free = freeHoles(), open = ui.order.map(id=>state.cards.find(c=>c.id===id));
+  const free = freeP(), open = ui.order.map(id=>state.cards.find(c=>c.id===id));
   const top = open[0];
   const deck = open.map((c,i)=>'<div class="dcard" data-pos="'+i+'" data-id="'+c.id+'" style="z-index:'+(50-i)+';transform:'+base(Math.min(i,3))+';opacity:'+(i>3?0:1)+'">'+cardInner(c)+'</div>').join("");
   const done = state.cards.filter(c=>c.done);
@@ -372,31 +461,25 @@ function renderCards(){
     const full = (+top.filled||0) >= top.holes;
     actions = full
       ? '<button type="button" class="btn" data-claim="'+top.id+'">Забрать ништяк: '+esc(top.reward||top.title)+'</button>'
-      : '<button type="button" class="btn" data-place="'+top.id+'"'+(free?'':' disabled')+'>'+(free?'Поставить дырочку сюда':'Свободных дырочек пока нет')+'</button>';
+      : '<button type="button" class="btn" data-place="'+top.id+'"'+(free?'':' disabled')+'>'+(free?'Поставить панч сюда':'Свободных панчей пока нет')+'</button>';
   }
-  const cdel = top && ui.confirm===('card:'+top.id)
-    ? '<div class="inline-confirm">Удалить «'+esc(top.title)+'»? <button type="button" class="btn sm" data-delcard="'+top.id+'" style="background:var(--danger)">Удалить</button><button type="button" class="btn sm soft" data-cancel="1">Нет</button></div>'
-    : (top?'<button type="button" class="btn sm soft" data-ask="card:'+top.id+'">Удалить карточку</button>':'');
+  const tools = !top ? '' : (ui.confirm===('card:'+top.id)
+    ? '<div class="inline-confirm">Удалить «'+esc(top.title)+'»? <button type="button" class="btn sm del" data-delcard="'+top.id+'">Удалить</button><button type="button" class="btn sm soft" data-cancel="1">Нет</button></div>'
+    : '<button type="button" class="btn sm soft" data-editcard="'+top.id+'">Изменить</button><button type="button" class="btn sm soft" data-ask="card:'+top.id+'">Удалить</button>');
   const tt = totalTicks();
   document.getElementById("v-cards").innerHTML =
-    '<div class="top"><div><div class="eyebrow">3 галочки = 1 дырочка</div><h1>Карточки</h1></div>'+
-    '<span class="pill">'+svg("punch")+free+' '+plural(free,'свободная','свободные','свободных')+'</span></div>'+
+    '<div class="top"><div><div class="eyebrow">3 галочки = 1 панч</div><h1>Карточки</h1></div>'+
+    '<span class="pill">'+svg("punch")+free+' '+plural(free,'свободный','свободных','свободных')+'</span></div>'+
     (open.length ? '<div class="deck" id="deck">'+deck+'</div>'+
       '<div class="deckbar"><button type="button" class="nav" data-deck="prev" aria-label="Предыдущая карточка">‹</button>'+
       '<span class="cnt">'+open.length+' '+plural(open.length,'карточка','карточки','карточек')+' в колоде</span><button type="button" class="nav" data-deck="next" aria-label="Следующая карточка">›</button></div>'+
-      '<p class="toast" id="toast">'+(ui.toast||'Листай свайпом. Нажми на пустую дырочку, чтобы закрыть её, на закрытую — чтобы вернуть.')+'</p>'+
-      '<div class="form">'+actions+'<div class="row" style="justify-content:center">'+cdel+'</div></div>'
+      '<p class="toast">'+(ui.toast||'Листай свайпом. Нажми на пустое место, чтобы поставить панч, на панч — чтобы вернуть.')+'</p>'+
+      '<div class="form">'+actions+'<div class="row" style="justify-content:center">'+tools+'</div></div>'
     : '<div class="empty">Все карточки получены. Сделай новую ниже.</div>')+
-    '<p class="muted small" style="text-align:center">Всего галочек: '+tt+' · до следующей дырочки '+(3-tt%3)+'</p>'+
-    '<details class="panel"><summary>Новая карточка</summary><div class="form">'+
-      '<div class="field"><label for="cTitle">Цель на карточке</label><input class="inp" id="cTitle" maxlength="40" placeholder="Например: дописать главу"></div>'+
-      '<div class="field"><label for="cReward">Награда</label><input class="inp" id="cReward" maxlength="80" placeholder="Например: каток на Медеу"></div>'+
-      '<div class="field"><label for="cHoles">Сколько дырочек</label><select class="inp" id="cHoles"><option value="2">2 · малый ништяк (6 галочек)</option><option value="4">4 · средний (12 галочек)</option><option value="6" selected>6 · большой (18 галочек)</option><option value="8">8 · мега (24 галочки)</option></select></div>'+
-      '<div><div class="lbl" style="margin-bottom:6px">Цвет</div><div class="dots">'+Object.keys(PAL).map(k=>'<button type="button" class="sw" data-pal="'+k+'" aria-pressed="'+(ui.cardPal===k)+'" aria-label="Цвет"><span style="background:'+PAL[k].l+'"></span><span style="background:'+PAL[k].r+'"></span></button>').join("")+'</div></div>'+
-      '<div><div class="lbl" style="margin-bottom:6px">Значок</div><div class="dots">'+ICONS.map(k=>'<button type="button" class="ic" data-icon="'+k+'" aria-pressed="'+(ui.cardIcon===k)+'" aria-label="Значок">'+svg(k)+'</button>').join("")+'</div></div>'+
-      '<button type="button" class="btn" data-act="addcard">Добавить карточку</button></div></details>'+
-    (done.length?'<h2>Коллекция полученных</h2><div class="coll">'+done.map(c=>{const p=PAL[c.pal]||PAL.navy;
-      return '<div class="mini" style="--c-l:'+p.l+';--c-t:'+p.t+'"><b>'+esc(c.title)+'</b><span>'+esc(c.reward)+'</span><span style="opacity:.7">получено '+fmtDate(c.done)+'</span><button type="button" data-undo="'+c.id+'">Вернуть в колоду</button></div>';}).join("")+'</div>':'');
+    '<p class="muted small" style="text-align:center;margin:0">Всего галочек: '+tt+' · до следующего панча '+(3-tt%3)+'</p>'+
+    (ui.cf ? cardForm() : '<button type="button" class="btn soft" data-act="newcard">+ Новая карточка</button>')+
+    (done.length?'<h2>Коллекция полученных</h2><div class="coll">'+done.map(c=>
+      '<div class="mini" style="--L:'+c.L+';--R:'+c.R+'"><b>'+esc(c.title)+'</b><span>'+esc(c.reward)+'</span><span style="opacity:.75">'+catOf(c.cat).name+' · получено '+fmtDate(c.done)+'</span><button type="button" data-undo="'+c.id+'">Вернуть в колоду</button></div>').join("")+'</div>':'');
   bindDeck();
   if(ui.flyIn){ const el=document.querySelector('.dcard[data-id="'+ui.flyIn.id+'"]');
     if(el){ const p=+el.dataset.pos; el.style.transition="none"; el.style.transform='translateX('+(ui.flyIn.dir*120)+'%) rotate('+(ui.flyIn.dir*14)+'deg)';
@@ -404,35 +487,55 @@ function renderCards(){
     ui.flyIn=null; }
 }
 
+/* ---------- goals ---------- */
+function taskForm(st, scope){
+  const goals = state.goals.map(g=>'<option value="'+g.id+'"'+(g.id===st.goal?' selected':'')+'>'+esc(g.name)+'</option>').join("");
+  return '<div class="form">'+
+    '<div class="field"><label for="'+scope+'Title">Задача</label><input class="inp" id="'+scope+'Title" data-tf="'+scope+'" data-field="title" maxlength="60" value="'+esc(st.title)+'" placeholder="Например: карусель для Instagram"></div>'+
+    '<div class="field"><label for="'+scope+'Min">Минимальная версия (необязательно)</label><input class="inp" id="'+scope+'Min" data-tf="'+scope+'" data-field="min" maxlength="60" value="'+esc(st.min)+'" placeholder="Например: открыть шаблон"></div>'+
+    '<div class="field"><label for="'+scope+'Goal">Цель</label><select class="inp" id="'+scope+'Goal" data-tf="'+scope+'" data-field="goal">'+goals+'</select></div>'+
+    '<div class="seg" role="group" aria-label="Тип задачи"><button type="button" data-tftype="'+scope+'" data-v="repeat" aria-pressed="'+(st.type==="repeat")+'">Повторяется</button><button type="button" data-tftype="'+scope+'" data-v="once" aria-pressed="'+(st.type==="once")+'">Разовая</button></div>'+
+    (st.type==="repeat"
+      ? '<div><div class="sub-h">По каким дням</div><div class="days">'+WD.map((w,i)=>'<button type="button" data-tfday="'+scope+'" data-v="'+i+'" aria-pressed="'+st.days.includes(i)+'">'+w+'</button>').join("")+'</div></div>'
+      : '<div class="field"><label for="'+scope+'Date">Дата</label><input class="inp" type="date" id="'+scope+'Date" data-tf="'+scope+'" data-field="date" value="'+esc(st.date||todayKey)+'"></div>')+
+    '<p class="err">'+esc(st.err)+'</p>'+
+    '<div class="row"><button type="button" class="btn" data-tfsave="'+scope+'" style="flex:1"'+(state.goals.length?'':' disabled')+'>'+(scope==="edit"?'Сохранить':'Добавить задачу')+'</button>'+
+    (scope==="edit"?'<button type="button" class="btn soft" data-tfcancel="1">Отмена</button>':'')+'</div></div>';
+}
+function goalForm(st, scope){
+  return '<div class="form">'+
+    '<div class="field"><label for="'+scope+'GName">Название цели</label><input class="inp" id="'+scope+'GName" data-gf="'+scope+'" maxlength="40" value="'+esc(st.name)+'" placeholder="Например: Выставки и город"></div>'+
+    '<div class="dots">'+GCOL.map(c=>'<button type="button" class="dot" style="--c:'+c+'" data-gcol="'+scope+'" data-v="'+c+'" aria-pressed="'+(st.color===c)+'" aria-label="Цвет цели"></button>').join("")+'</div>'+
+    '<p class="err">'+esc(st.err||"")+'</p>'+
+    '<div class="row"><button type="button" class="btn" data-gsave="'+scope+'" style="flex:1">'+(scope==="edit"?'Сохранить':'Добавить цель')+'</button>'+
+    (scope==="edit"?'<button type="button" class="btn soft" data-gcancel="1">Отмена</button>':'')+'</div></div>';
+}
 function renderGoals(){
-  if(!ui.addGoal || !state.goals.some(g=>g.id===ui.addGoal)) ui.addGoal = state.goals[0] ? state.goals[0].id : null;
+  if(!ui.newTask.goal || !state.goals.some(g=>g.id===ui.newTask.goal)) ui.newTask.goal = state.goals[0] ? state.goals[0].id : null;
   const goals = state.goals.map(g=>{
     const ts = state.tasks.filter(t=>t.goal===g.id && (t.type==="repeat" || t.date>=todayKey));
-    const gdel = ui.confirm===('goal:'+g.id)
-      ? '<div class="inline-confirm">Удалить цель и её задачи? <button type="button" class="btn sm" style="background:var(--danger)" data-delgoal="'+g.id+'">Да</button><button type="button" class="btn sm soft" data-cancel="1">Нет</button></div>'
-      : '<button type="button" class="x" data-ask="goal:'+g.id+'" aria-label="Удалить цель">×</button>';
-    return '<div class="goal" style="--g:'+g.color+'"><div class="goal-h"><span class="sq"></span><h2>'+esc(g.name)+'</h2><span class="muted small">'+ts.length+'</span>'+gdel+'</div>'+
-      (ts.length? ts.map(t=>'<div class="trow"><div><span class="tt">'+esc(t.title)+'</span><span class="meta"><span>'+(t.type==="once"?'разово · ':'')+schedText(t)+'</span>'+(t.min?'<span>минимум: '+esc(t.min)+'</span>':'')+'</span></div>'+
-        (ui.confirm===('task:'+t.id)?'<div class="inline-confirm" style="flex:none"><button type="button" class="btn sm" style="background:var(--danger)" data-deltask="'+t.id+'">Удалить</button><button type="button" class="btn sm soft" data-cancel="1">Нет</button></div>':'<button type="button" class="x" data-ask="task:'+t.id+'" aria-label="Удалить задачу">×</button>')+'</div>').join("")
-       : '<div class="empty small">Задач пока нет</div>')+'</div>';
+    let head;
+    if(ui.editGoal && ui.editGoal.id===g.id) head = '<div class="edit-box">'+goalForm(ui.editGoal,"edit")+'</div>';
+    else head = '<div class="goal-h"><span class="sq"></span><h2>'+esc(g.name)+'</h2><span class="muted small">'+ts.length+'</span>'+
+      (ui.confirm===('goal:'+g.id)
+        ? '<div class="inline-confirm">Удалить цель и её задачи? <button type="button" class="btn sm del" data-delgoal="'+g.id+'">Да</button><button type="button" class="btn sm soft" data-cancel="1">Нет</button></div>'
+        : '<button type="button" class="x" data-editgoal="'+g.id+'" aria-label="Изменить цель">'+svg("pen")+'</button><button type="button" class="x" data-ask="goal:'+g.id+'" aria-label="Удалить цель">×</button>')+'</div>';
+    const rows = ts.length ? ts.map(t=>{
+      if(ui.editTask && ui.editTask.id===t.id) return '<div class="edit-box">'+taskForm(ui.editTask,"edit")+'</div>';
+      return '<div class="trow"><div><span class="tt">'+esc(t.title)+'</span><span class="meta"><span>'+(t.type==="once"?'разово · ':'')+schedText(t)+'</span>'+(t.min?'<span>минимум: '+esc(t.min)+'</span>':'')+'</span></div>'+
+        (ui.confirm===('task:'+t.id)
+          ? '<div class="inline-confirm" style="flex:none"><button type="button" class="btn sm del" data-deltask="'+t.id+'">Удалить</button><button type="button" class="btn sm soft" data-cancel="1">Нет</button></div>'
+          : '<button type="button" class="x" data-edittask="'+t.id+'" aria-label="Изменить задачу">'+svg("pen")+'</button><button type="button" class="x" data-ask="task:'+t.id+'" aria-label="Удалить задачу">×</button>')+'</div>';
+    }).join("") : '<div class="empty small">Задач пока нет</div>';
+    return '<div class="goal" style="--g:'+g.color+'">'+head+rows+'</div>';
   }).join("");
-  const today = tasksFor(todayKey).length;
   document.getElementById("v-goals").innerHTML =
-    '<div class="top"><div><div class="eyebrow">не больше '+MAX+' задач в день</div><h1>Цели</h1></div><span class="pill">сегодня '+today+' / '+MAX+'</span></div>'+
-    '<details class="panel"'+(ui.err?' open':'')+'><summary>Новая задача</summary><div class="form">'+
-      '<div class="field"><label for="tTitle">Задача</label><input class="inp" id="tTitle" maxlength="60" placeholder="Например: карусель для Instagram"></div>'+
-      '<div class="field"><label for="tMin">Минимальная версия (необязательно)</label><input class="inp" id="tMin" maxlength="60" placeholder="Например: открыть шаблон"></div>'+
-      '<div class="field"><label for="tGoal">Цель</label><select class="inp" id="tGoal">'+state.goals.map(g=>'<option value="'+g.id+'"'+(g.id===ui.addGoal?' selected':'')+'>'+esc(g.name)+'</option>').join("")+'</select></div>'+
-      '<div class="seg" role="group" aria-label="Тип задачи"><button type="button" data-type="repeat" aria-pressed="'+(ui.addType==="repeat")+'">Повторяется</button><button type="button" data-type="once" aria-pressed="'+(ui.addType==="once")+'">Разовая</button></div>'+
-      (ui.addType==="repeat"
-        ? '<div><div class="lbl" style="margin-bottom:6px">По каким дням</div><div class="days">'+WD.map((w,i)=>'<button type="button" data-wd="'+i+'" aria-pressed="'+ui.addDays.includes(i)+'">'+w+'</button>').join("")+'</div></div>'
-        : '<div class="field"><label for="tDate">Дата</label><input class="inp" type="date" id="tDate" min="'+todayKey+'" value="'+todayKey+'"></div>')+
-      '<p class="err">'+esc(ui.err)+'</p><button type="button" class="btn" data-act="addtask"'+(state.goals.length?'':' disabled')+'>Добавить задачу</button></div></details>'+
+    '<div class="top"><div><div class="eyebrow">не больше '+MAX+' задач в день</div><h1>Цели</h1></div><span class="pill">сегодня '+tasksFor(todayKey).length+' / '+MAX+'</span></div>'+
+    '<div class="panel"><button type="button" class="panel-h" data-toggle="newTaskOpen" aria-expanded="'+ui.newTaskOpen+'"><span>Новая задача</span><span>'+(ui.newTaskOpen?'–':'+')+'</span></button>'+
+      (ui.newTaskOpen?'<div style="margin-top:14px">'+taskForm(ui.newTask,"new")+'</div>':'')+'</div>'+
     goals+
-    '<details class="panel"><summary>Новая цель</summary><div class="form">'+
-      '<div class="field"><label for="gName">Название</label><input class="inp" id="gName" maxlength="40" placeholder="Например: Выставки и город"></div>'+
-      '<div class="dots">'+GCOL.map(c=>'<button type="button" class="dot" style="--c:'+c+'" data-gcol="'+c+'" aria-pressed="'+(ui.newGoalColor===c)+'" aria-label="Цвет цели"></button>').join("")+'</div>'+
-      '<button type="button" class="btn" data-act="addgoal">Добавить цель</button></div></details>';
+    '<div class="panel"><button type="button" class="panel-h" data-toggle="newGoalOpen" aria-expanded="'+ui.newGoalOpen+'"><span>Новая цель</span><span>'+(ui.newGoalOpen?'–':'+')+'</span></button>'+
+      (ui.newGoalOpen?'<div style="margin-top:14px">'+goalForm(ui.newGoal,"new")+'</div>':'')+'</div>';
 }
 
 function render(){
@@ -468,7 +571,6 @@ function bindDeck(){
 }
 function flyOut(el, dir){
   el.style.transform = 'translateX('+(dir*125)+'%) rotate('+(dir*18)+'deg)';
-  // карточки сзади подтягиваются вперёд
   document.querySelectorAll('.dcard').forEach(c=>{ const p=+c.dataset.pos; if(p>0){ c.style.transform=base(Math.min(p-1,3)); c.style.opacity = p-1>3?0:1; } });
   const id = el.dataset.id;
   setTimeout(()=>{ ui.order = ui.order.filter(x=>x!==id).concat(id); ui.flyIn={id,dir}; ui.toast=""; renderCards(); }, 230);
@@ -515,13 +617,67 @@ async function initStore(){
   }catch(e){ syncEl.textContent="Сохраняется в этом браузере"; }
 }
 
-/* ---------- events ---------- */
+/* ---------- actions ---------- */
 const val = id => { const el=document.getElementById(id); return el ? el.value.trim() : ""; };
+const tstate = scope => scope==="edit" ? ui.editTask : ui.newTask;
+const gstate = scope => scope==="edit" ? ui.editGoal : ui.newGoal;
+function placeIn(c){
+  if(!c || c.done) return;
+  if(freeP()<=0){ ui.toast="Свободных панчей нет: ещё "+ticksW(3-totalTicks()%3); renderCards(); return; }
+  if((+c.filled||0)>=c.holes) return;
+  c.filled=(+c.filled||0)+1; ui.pop={id:c.id,i:c.filled-1};
+  ui.toast = c.filled>=c.holes ? "Карточка заполнена! Можно забрать ништяк" : "";
+  persist(); render();
+}
+function saveTask(scope){
+  const st = tstate(scope); const title=(st.title||"").trim(); const ex = scope==="edit"?st.id:null;
+  const orig = ex ? state.tasks.find(t=>t.id===ex) : null;
+  if(!title){ st.err="Впиши название задачи"; return renderGoals(); }
+  if(!st.goal){ st.err="Сначала создай цель"; return renderGoals(); }
+  if(st.type==="repeat"){
+    if(!st.days.length){ st.err="Выбери хотя бы один день"; return renderGoals(); }
+    const c = conflictFor("repeat",{days:st.days},ex);
+    if(c){ st.err="В "+WDA[dow(c)]+" ("+fmtDate(c)+") уже "+MAX+" задач. Убери этот день или другую задачу."; return renderGoals(); }
+  } else {
+    const date = st.date||todayKey;
+    if(date<todayKey && !(orig && orig.type==="once" && orig.date===date)){ st.err="Дата уже прошла"; return renderGoals(); }
+    if(conflictFor("once",{date},ex)){ st.err="На "+fmtDate(date)+" уже "+MAX+" задач. Выбери другой день."; return renderGoals(); }
+  }
+  const data = {title, min:(st.min||"").trim(), goal:st.goal, type:st.type};
+  if(st.type==="repeat"){ data.days=[...st.days].sort((a,b)=>a-b); data.from = (orig && orig.type==="repeat" && orig.from) ? orig.from : todayKey; }
+  else { data.date = st.date||todayKey; }
+  if(orig){ ["days","from","date"].forEach(k=>delete orig[k]); Object.assign(orig, data); ui.editTask=null; }
+  else { state.tasks.push({id:uid(),...data}); const g=st.goal; ui.newTask=blankTask(); ui.newTask.goal=g; ui.newTaskOpen=false; }
+  persist(); render();
+}
+function saveGoal(scope){
+  const st = gstate(scope); const name=(st.name||"").trim();
+  if(!name){ st.err="Впиши название"; return renderGoals(); }
+  if(scope==="edit"){ const g=state.goals.find(x=>x.id===st.id); if(g){ g.name=name; g.color=st.color; } ui.editGoal=null; }
+  else { state.goals.push({id:uid(),name,color:st.color}); ui.newGoal={name:"",color:GCOL[state.goals.length%GCOL.length],err:""}; ui.newGoalOpen=false; }
+  persist(); render();
+}
+function saveCard(){
+  const f = ui.cf; const title=(f.title||"").trim();
+  if(!title){ f.err="Впиши цель на карточке"; rerenderForm(true); const el=document.getElementById("cfTitle"); if(el) el.focus(); return; }
+  const data = {title, reward:(f.reward||"").trim(), holes:f.holes, cat:f.cat, icon:f.icon, L:f.L, R:f.R};
+  if(f.id){ const c=state.cards.find(x=>x.id===f.id); if(c){ Object.assign(c,data); c.filled=Math.min(+c.filled||0,c.holes); } ui.toast="Карточка обновлена"; }
+  else { const c={id:uid(),...data,filled:0,done:null}; state.cards.push(c); ui.order=[c.id].concat(ui.order.filter(x=>x!==c.id)); ui.toast="Новая карточка сверху колоды"; }
+  ui.cf=null; persist(); render(); window.scrollTo({top:0,behavior:"smooth"});
+}
+function rerenderForm(keepErr){
+  const det = document.querySelector('details[data-cfmore]'); if(det) ui.cf.moreOpen = det.open;
+  if(!keepErr) ui.cf.err="";
+  const y = window.scrollY; renderCards(); window.scrollTo({top:y});
+}
+function scrollToForm(){ const el=document.getElementById("cardForm"); if(el) el.scrollIntoView({behavior:"smooth",block:"start"}); }
+
 document.addEventListener("click", e=>{
   if(suppressClick){ e.preventDefault(); e.stopPropagation(); return; }
   const b = e.target.closest("button"); if(!b || b.disabled) return;
   const d = b.dataset;
   if(d.tab){ ui.tab=d.tab; ui.confirm=null; render(); window.scrollTo({top:0}); return; }
+  if(d.toggle){ ui[d.toggle]=!ui[d.toggle]; render(); return; }
   if(d.day){ ui.sel=d.day; ui.qerr=""; renderToday(); return; }
   if(d.tick){
     const arr = doneOn(ui.sel).slice(), i = arr.indexOf(d.tick);
@@ -529,75 +685,67 @@ document.addEventListener("click", e=>{
     const before = Math.floor(totalTicks()/3);
     state.done = {...state.done, [ui.sel]: arr};
     persist(); render();
-    if(Math.floor(totalTicks()/3) > before){ const p=document.querySelector("#v-today .pill"); if(p) p.animate([{transform:"scale(1)"},{transform:"scale(1.18)"},{transform:"scale(1)"}],{duration:450,easing:"cubic-bezier(.3,1.6,.5,1)"}); }
+    if(Math.floor(totalTicks()/3) > before){ const p=document.querySelector("#v-today .pill"); if(p && p.animate) p.animate([{transform:"scale(1)"},{transform:"scale(1.18)"},{transform:"scale(1)"}],{duration:450,easing:"cubic-bezier(.3,1.6,.5,1)"}); }
     return;
   }
   if(d.hole){
     const c = state.cards.find(x=>x.id===d.hole); if(!c || c.done) return;
-    if(d.on==="1"){ c.filled=Math.max(0,(+c.filled||0)-1); ui.toast="Дырочка вернулась в запас"; }
-    else if(freeHoles()>0 && (+c.filled||0)<c.holes){ c.filled=(+c.filled||0)+1; ui.pop={id:c.id,i:c.filled-1}; ui.toast=c.filled>=c.holes?"Карточка заполнена! Можно забрать ништяк":""; }
-    else { ui.toast="Свободных дырочек нет — ещё "+(3-totalTicks()%3)+" "+plural(3-totalTicks()%3,"галочка","галочки","галочек"); renderCards(); return; }
-    persist(); render(); return;
+    if(d.on==="1"){ c.filled=Math.max(0,(+c.filled||0)-1); ui.toast="Панч вернулся в запас"; persist(); render(); }
+    else placeIn(c);
+    return;
   }
-  if(d.place){ const c=state.cards.find(x=>x.id===d.place); if(c && freeHoles()>0 && (+c.filled||0)<c.holes){ c.filled=(+c.filled||0)+1; ui.pop={id:c.id,i:c.filled-1}; ui.toast=c.filled>=c.holes?"Карточка заполнена! Можно забрать ништяк":""; persist(); render(); } return; }
+  if(d.place){ placeIn(state.cards.find(x=>x.id===d.place)); return; }
   if(d.claim){ const c=state.cards.find(x=>x.id===d.claim); if(c){ c.done=todayKey; c.filled=c.holes; ui.toast="Ништяк твой. Карточка ушла в коллекцию"; persist(); render(); } return; }
   if(d.undo){ const c=state.cards.find(x=>x.id===d.undo); if(c){ c.done=null; persist(); render(); } return; }
   if(d.deck==="next"){ const top=document.querySelector('.dcard[data-pos="0"]'); if(top && ui.order.length>1) flyOut(top,-1); return; }
   if(d.deck==="prev"){ deckPrev(); return; }
   if(d.ask){ ui.confirm=d.ask; render(); return; }
   if(d.cancel){ ui.confirm=null; render(); return; }
-  if(d.delcard){ state.cards=state.cards.filter(c=>c.id!==d.delcard); ui.confirm=null; persist(); render(); return; }
+  if(d.delcard){ state.cards=state.cards.filter(c=>c.id!==d.delcard); ui.confirm=null; if(ui.cf&&ui.cf.id===d.delcard) ui.cf=null; persist(); render(); return; }
   if(d.deltask){ state.tasks=state.tasks.filter(t=>t.id!==d.deltask); ui.confirm=null; persist(); render(); return; }
   if(d.delgoal){ state.goals=state.goals.filter(g=>g.id!==d.delgoal); state.tasks=state.tasks.filter(t=>t.goal!==d.delgoal); ui.confirm=null; persist(); render(); return; }
-  if(d.pal){ ui.cardPal=d.pal; keepOpen(()=>renderCards()); return; }
-  if(d.icon){ ui.cardIcon=d.icon; keepOpen(()=>renderCards()); return; }
-  if(d.gcol){ ui.newGoalColor=d.gcol; keepOpen(()=>renderGoals()); return; }
-  if(d.type){ ui.addType=d.type; ui.err=""; keepOpen(()=>renderGoals()); return; }
-  if(d.wd!==undefined){ const i=+d.wd; ui.addDays = ui.addDays.includes(i) ? ui.addDays.filter(x=>x!==i) : ui.addDays.concat(i); keepOpen(()=>renderGoals()); return; }
+  // форма карточки
+  if(d.act==="newcard"){ ui.cf=newCardForm(); renderCards(); scrollToForm(); return; }
+  if(d.editcard){ const c=state.cards.find(x=>x.id===d.editcard); if(c){ ui.cf={id:c.id,title:c.title,reward:c.reward||"",cat:c.cat,holes:c.holes,L:c.L,R:c.R,icon:c.icon,iconSet:c.icon!==catOf(c.cat).icon,moreOpen:false,err:""}; ui.confirm=null; renderCards(); scrollToForm(); } return; }
+  if(d.act==="cancelcard"){ ui.cf=null; renderCards(); return; }
+  if(d.act==="savecard"){ saveCard(); return; }
+  if(d.cfcat){ ui.cf.cat=d.cfcat; if(!ui.cf.iconSet) ui.cf.icon=catOf(d.cfcat).icon; rerenderForm(); return; }
+  if(d.cfw){ ui.cf.holes=+d.cfw; const p=autoPair(ui.cf.holes,state.cards,ui.cf.id); ui.cf.L=p[0]; ui.cf.R=p[1]; rerenderForm(); return; }
+  if(d.cfpair){ const p=PAIRS[groupOf(ui.cf.holes)][+d.cfpair]; ui.cf.L=p[0]; ui.cf.R=p[1]; rerenderForm(); return; }
+  if(d.cfl){ ui.cf.L=d.cfl; rerenderForm(); return; }
+  if(d.cfr){ ui.cf.R=d.cfr; rerenderForm(); return; }
+  if(d.cfi){ ui.cf.icon=d.cfi; ui.cf.iconSet=true; rerenderForm(); return; }
+  // задачи
+  if(d.tftype){ const st=tstate(d.tftype); st.type=d.v; st.err=""; renderGoals(); return; }
+  if(d.tfday){ const st=tstate(d.tfday), i=+d.v; st.days = st.days.includes(i) ? st.days.filter(x=>x!==i) : st.days.concat(i); renderGoals(); return; }
+  if(d.tfsave){ saveTask(d.tfsave); return; }
+  if(d.tfcancel){ ui.editTask=null; renderGoals(); return; }
+  if(d.edittask){ const t=state.tasks.find(x=>x.id===d.edittask); if(t){ ui.editTask={id:t.id,title:t.title,min:t.min||"",goal:t.goal,type:t.type,days:t.days?[...t.days]:[dow(todayKey)],date:t.date||todayKey,err:""}; ui.editGoal=null; ui.confirm=null; renderGoals(); } return; }
+  // цели
+  if(d.editgoal){ const g=state.goals.find(x=>x.id===d.editgoal); if(g){ ui.editGoal={id:g.id,name:g.name,color:g.color,err:""}; ui.editTask=null; ui.confirm=null; renderGoals(); } return; }
+  if(d.gcol){ gstate(d.gcol).color=d.v; renderGoals(); return; }
+  if(d.gsave){ saveGoal(d.gsave); return; }
+  if(d.gcancel){ ui.editGoal=null; renderGoals(); return; }
   if(d.act==="quick"){
     const title=val("qTitle"); if(!title){ ui.qerr="Впиши, что сделать"; renderToday(); return; }
     if(tasksFor(ui.sel).length>=MAX){ ui.qerr="На этот день уже "+MAX+" задач"; renderToday(); return; }
     state.tasks.push({id:uid(),title,goal:val("qGoal"),type:"once",date:ui.sel,min:""}); ui.qerr=""; persist(); render(); return;
   }
-  if(d.act==="addtask"){
-    const title=val("tTitle"), goal=val("tGoal"), min=val("tMin");
-    if(!title){ ui.err="Впиши название задачи"; keepOpen(()=>renderGoals(), true); return; }
-    if(ui.addType==="repeat"){
-      if(!ui.addDays.length){ ui.err="Выбери хотя бы один день"; keepOpen(()=>renderGoals(), true); return; }
-      const c = conflictFor("repeat",{days:ui.addDays});
-      if(c){ ui.err=WDL[dow(c)][0].toUpperCase()+WDL[dow(c)].slice(1)+" ("+fmtDate(c)+") уже заполнен: "+MAX+" задач. Убери этот день или другую задачу."; keepOpen(()=>renderGoals(), true); return; }
-      state.tasks.push({id:uid(),title,goal,type:"repeat",days:[...ui.addDays].sort(),from:todayKey,min});
-    } else {
-      const date=val("tDate")||todayKey;
-      if(date<todayKey){ ui.err="Дата уже прошла"; keepOpen(()=>renderGoals(), true); return; }
-      if(conflictFor("once",{date})){ ui.err=fmtDate(date)+" уже "+MAX+" задач. Выбери другой день."; keepOpen(()=>renderGoals(), true); return; }
-      state.tasks.push({id:uid(),title,goal,type:"once",date,min});
-    }
-    ui.addGoal=goal; ui.err=""; persist(); render(); return;
-  }
-  if(d.act==="addgoal"){
-    const name=val("gName"); if(!name){ const el=document.getElementById("gName"); el.placeholder="Сначала впиши название"; el.focus(); return; }
-    const id=uid(); state.goals.push({id,name,color:ui.newGoalColor}); ui.addGoal=id; persist(); render(); return;
-  }
-  if(d.act==="addcard"){
-    const title=val("cTitle"); if(!title){ const el=document.getElementById("cTitle"); el.placeholder="Сначала впиши цель"; el.focus(); return; }
-    const c={id:uid(),title,reward:val("cReward"),holes:+val("cHoles")||6,pal:ui.cardPal,icon:ui.cardIcon,filled:0,done:null};
-    state.cards.push(c); ui.order=[c.id].concat(ui.order.filter(x=>x!==c.id)); ui.toast="Новая карточка сверху колоды"; persist(); render(); window.scrollTo({top:0,behavior:"smooth"}); return;
-  }
 }, true);
 
-// перерисовать форму, не потеряв набранный текст и открытые панели
-function keepOpen(fn, forceOpen){
-  const vals={}; document.querySelectorAll(".inp").forEach(el=>{ if(el.id) vals[el.id]=el.value; });
-  const open=[...document.querySelectorAll("details.panel")].map(x=>x.open);
-  fn();
-  document.querySelectorAll(".inp").forEach(el=>{ if(el.id && vals[el.id]!==undefined && el.id!=="tDate"||(el.id==="tDate"&&vals.tDate)) el.value=vals[el.id]; });
-  const ds=[...document.querySelectorAll("details.panel")]; ds.forEach((x,i)=>{ if(open[i]) x.open=true; });
-}
+document.addEventListener("input", e=>{
+  const t = e.target, d = t.dataset || {};
+  if(d.tf && d.field){ tstate(d.tf)[d.field] = t.value; return; }
+  if(d.gf){ gstate(d.gf).name = t.value; return; }
+  if(d.cf && ui.cf){ ui.cf[d.cf] = t.value;
+    const pv = document.querySelector("#cardForm .preview");
+    if(pv){ if(d.cf==="title") pv.querySelector(".ttl").textContent = t.value || "Название"; if(d.cf==="reward") pv.querySelector(".rv").textContent = t.value || " "; }
+  }
+});
 document.addEventListener("change", e=>{
-  const id = e.target.dataset && e.target.dataset.rw; if(!id) return;
-  const c = state.cards.find(x=>x.id===id); const v=e.target.value.trim();
-  if(c && c.reward!==v){ c.reward=v; persist(); }
+  const t = e.target, d = t.dataset || {};
+  if(d.tf && d.field){ tstate(d.tf)[d.field] = t.value; return; }
+  if(d.rw){ const c = state.cards.find(x=>x.id===d.rw); const v=t.value.trim(); if(c && c.reward!==v){ c.reward=v; persist(); } }
 });
 document.addEventListener("keydown", e=>{
   if(ui.tab!=="cards" || e.target.closest("input,select,textarea")) return;
